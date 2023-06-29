@@ -14,7 +14,7 @@ import 'package:rkt/content.dart';
 
 
 late TextEditingController _email, _password;
-class LoginPage extends StatelessWidget{
+class SignUpPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -110,7 +110,7 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
         onPressed: () async {
-          await login(context);
+          await signup(context);
 
 
 
@@ -121,7 +121,7 @@ class LoginButton extends StatelessWidget {
 
             padding: const EdgeInsets.fromLTRB(60, 0, 60, 0)
         ),
-        child: const Text("Log in")
+        child: const Text("Sign up")
     );
   }
   Future<void> addDialog(BuildContext context) async {
@@ -153,24 +153,12 @@ class LoginButton extends StatelessWidget {
       },
     );
   }
-  //Using custom backend
-  /*
-  Future<http.Response> sendCredentials() {
-    print("in send credentials");
-    return http.post(
-      Uri.parse('http://localhost:8080/product/${_email.text}/${_password.text}'),
-      headers: <String, String>{
-    "Access-Control-Allow-Origin": "*"
 
-    },
-    );
-  }
-  */
 
-  Future<UserCredential?> login(context) async {
+  Future<UserCredential?> signup(context) async {
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _email.text,
         password: _password.text,
       );

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>408241291251-pqku12qh56qb2fhn82uusfoj51cnn2rq.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.408241291251-pqku12qh56qb2fhn82uusfoj51cnn2rq</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB6NPZE-5CImQ0aUi5r2pJF36xb4UaDI8w</string>
+	<key>GCM_SENDER_ID</key>
+	<string>408241291251</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.rkt</string>
+	<key>PROJECT_ID</key>
+	<string>rkt-summer</string>
+	<key>STORAGE_BUCKET</key>
+	<string>rkt-summer.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:408241291251:ios:1c81c97fb5a88790441c86</string>
+</dict>
+</plist>

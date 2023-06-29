@@ -1,7 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:rkt/login_user.dart';
+import 'package:rkt/signup.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
@@ -43,7 +50,9 @@ class MyHomePage extends StatelessWidget {
             SizedBox(height: 200,),
             TextButton(
                 onPressed: (){
-
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUpPage()));
                 },
                 child: Text("sign up",style: TextStyle(fontSize: 30),)),
             SizedBox(height: 50,),
