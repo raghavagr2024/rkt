@@ -1,14 +1,12 @@
-import 'dart:developer';
-//import 'dart:math';
 
 
-import 'package:firebase_auth/firebase_auth.dart';
+
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+
 
 import 'package:rkt/content.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 
 
@@ -21,8 +19,8 @@ class LoginPage extends StatelessWidget{
     return Scaffold(
       body: Column(
         children: <Widget>[
-          SizedBox(height: 50,),
-          Row(
+          const SizedBox(height: 50,),
+          const Row(
             children: [
               BackButton(),
             ],
@@ -124,17 +122,17 @@ class LoginButton extends StatelessWidget {
         child: const Text("Log in")
     );
   }
-  Future<void> addDialog(BuildContext context) async {
+  Future<void> addLoginDialog(BuildContext context, String message) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('AlertDialog Title'),
-          content: const SingleChildScrollView(
+          content:  SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Invalid Credentials'),
+                Text(message),
 
               ],
             ),
@@ -153,38 +151,26 @@ class LoginButton extends StatelessWidget {
       },
     );
   }
-  //Using custom backend
-  /*
-  Future<http.Response> sendCredentials() {
-    print("in send credentials");
-    return http.post(
-      Uri.parse('http://localhost:8080/product/${_email.text}/${_password.text}'),
-      headers: <String, String>{
-    "Access-Control-Allow-Origin": "*"
 
-    },
-    );
-  }
-  */
 
-  Future<UserCredential?> login(context) async {
+  Future<void> login(context) async {
 
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+    try{
+      final supabase = Supabase.instance.client;
+      final AuthResponse res = await supabase.auth.signInWithPassword(
         email: _email.text,
         password: _password.text,
       );
       Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ContentPage()));
-
+    }
+    on AuthException catch(e){
+      addLoginDialog(context,e.message);
 
     }
 
-    on FirebaseAuthException catch (e) {
-      addDialog(context);
-      log(e.code);
-    }
+
   }
 
 

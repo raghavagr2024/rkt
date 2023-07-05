@@ -1,13 +1,15 @@
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:rkt/login_user.dart';
 import 'package:rkt/signup.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'firebase_options.dart';
+
 
 Future<void> main() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+  await Supabase.initialize(
+    url: 'https://fqblcjjyxmyelgnwoyru.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxYmxjamp5eG15ZWxnbndveXJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODc1NjgwNzYsImV4cCI6MjAwMzE0NDA3Nn0.xpsBchAJfqv_f97qL2boxvBMpBzs9zBQqZ3dFs8kBAI',
   );
   runApp(MyApp());
 }
@@ -47,15 +49,15 @@ class MyHomePage extends StatelessWidget {
       Center(
         child: Column(
           children: [
-            SizedBox(height: 200,),
+            const SizedBox(height: 200,),
             TextButton(
                 onPressed: (){
                   Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => SignUpPage()));
                 },
-                child: Text("sign up",style: TextStyle(fontSize: 30),)),
-            SizedBox(height: 50,),
+                child: const Text("sign up",style: TextStyle(fontSize: 30),)),
+            const SizedBox(height: 50,),
             TextButton(
                 onPressed: (){
                   Navigator.push(
@@ -63,7 +65,7 @@ class MyHomePage extends StatelessWidget {
                              MaterialPageRoute(builder: (context) => LoginPage()));
 
                 },
-                child: Text("Log in",style: TextStyle(fontSize: 30))),
+                child: const Text("Log in",style: TextStyle(fontSize: 30))),
 
           ],
         ),
