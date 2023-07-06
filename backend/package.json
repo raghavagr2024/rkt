@@ -1,0 +1,17 @@
+{
+  "name": "rkt-backend",
+  "version": "1.0.0",
+  "description": "backend for rkt",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "amo24",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.26.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1"
+  }
+}
