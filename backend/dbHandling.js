@@ -32,40 +32,51 @@ router.post('/content', isAuthenticated, createContentSchema, async (req, res) =
     }
 
     try {
-        const { title, desc, contents } = req.body;
-
         const { data, error } = await supabase.from('content').insert([
             {
-                name: title,
-                description: desc,
-                data: contents,
+                name: req.title,
+                description: req.desc,
+                data: req.contents,
             },
         ]);
 
         if (error) {
             throw new Error(error.message);
         }
+
+        res.status(200).json(request.body);
     } catch (error) {
         console.error('Write error: ', error.message);
         return res.status(500).json({ message: 'Internal server error.' });
     }
 });
 
-router.get('/content', isAuthenticated, createContentSchema, async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ message: errors.array() });
-    }
-
+router.get('/content', isAuthenticated, async (_, res) => {
     try {
-        const { data, error } = await supabase.from('content').select('id', 'data', 'name', 'description');
+        const { data, error } = await supabase.from('content').select();
 
         if (error) {
             throw new Error(error.message);
         }
+
+        return res.send(data);
     } catch (error) {
         console.error('Read error: ', error.message);
         return res.status(500).json({ message: 'Internal server error.' });
+    }
+});
+
+router.get('/content/:id', isAuthenticated, async (req, res) => {
+    try {
+        const { data, error } = await supabase.from('content').select().eq("id", req.params.id);
+
+        if (error) {
+            throw new Error(error);
+        }
+
+        return res.send(data);
+    } catch (error) {
+        return res.send({ error });
     }
 });
 
