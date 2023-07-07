@@ -2,7 +2,7 @@ const express = require('express');
 const serverless = require('serverless-http');
 
 const app = express();
-const authRoutes = require('./auth-routes');
+const authRoutes = require('./auth');
 const dbRoutes = require('./dbHandling');
 
 app.use(express.json());
