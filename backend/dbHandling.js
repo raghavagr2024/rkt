@@ -34,9 +34,8 @@ router.post('/content', isAuthenticated, createContentSchema, async (req, res) =
     try {
         const { data, error } = await supabase.from('content').insert([
             {
-                name: req.title,
-                description: req.desc,
-                data: req.contents,
+                Title: req.title,
+                Body: req.body,
             },
         ]);
 
