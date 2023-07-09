@@ -43,7 +43,7 @@ router.post('/content', isAuthenticated, createContentSchema, async (req, res) =
             throw new Error(error.message);
         }
 
-        res.status(200).json(request.body);
+        return res.status(200).json(req.body);
     } catch (error) {
         console.error('Write error: ', error.message);
         return res.status(500).json({ message: 'Internal server error.' });
