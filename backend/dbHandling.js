@@ -25,18 +25,17 @@ const createContentSchema = [
     // Add more validation rules for other fields if needed
 ];
 
-// Insert new 
 router.post('/content', isAuthenticated, createContentSchema, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ message: errors.array() });
     }
-
+    const { title, body } = req.body 
     try {
         const { data, error } = await supabase.from('content').insert([
             {
-                Title: req.title,
-                Body: req.body,
+                Title: title,
+                Body: body,
             },
         ]);
 
@@ -51,7 +50,6 @@ router.post('/content', isAuthenticated, createContentSchema, async (req, res) =
     }
 });
 
-// Display all
 router.get('/content', isAuthenticated, async (_, res) => {
     try {
         const { data, error } = await supabase.from('content').select();
@@ -67,7 +65,6 @@ router.get('/content', isAuthenticated, async (_, res) => {
     }
 });
 
-// Display certain
 router.get('/content/:id', isAuthenticated, async (req, res) => {
     try {
         const { data, error } = await supabase.from('content').select().eq("id", req.params.id);
