@@ -1,22 +1,19 @@
-
 import 'package:flutter/material.dart';
+import 'package:rkt/accountChoice.dart';
 import 'package:rkt/login_user.dart';
 import 'package:rkt/signup.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
-
 Future<void> main() async {
   await Supabase.initialize(
     url: 'https://fqblcjjyxmyelgnwoyru.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxYmxjamp5eG15ZWxnbndveXJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODc1NjgwNzYsImV4cCI6MjAwMzE0NDA3Nn0.xpsBchAJfqv_f97qL2boxvBMpBzs9zBQqZ3dFs8kBAI',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxYmxjamp5eG15ZWxnbndveXJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODc1NjgwNzYsImV4cCI6MjAwMzE0NDA3Nn0.xpsBchAJfqv_f97qL2boxvBMpBzs9zBQqZ3dFs8kBAI',
   );
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -40,43 +37,36 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-      Center(
+      body: Center(
         child: Column(
           children: [
-            const SizedBox(height: 200,),
+            const SizedBox(
+              height: 200,
+            ),
             TextButton(
-                onPressed: (){
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignUpPage()));
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => AccountChoice()));
                 },
-                child: const Text("sign up",style: TextStyle(fontSize: 30),)),
-            const SizedBox(height: 50,),
+                child: const Text(
+                  "sign up",
+                  style: TextStyle(fontSize: 30),
+                )),
+            const SizedBox(
+              height: 50,
+            ),
             TextButton(
-                onPressed: (){
-                  Navigator.push(
-                             context,
-                             MaterialPageRoute(builder: (context) => LoginPage()));
-
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
                 },
-                child: const Text("Log in",style: TextStyle(fontSize: 30))),
-
+                child: const Text("Log in", style: TextStyle(fontSize: 30))),
           ],
         ),
-
       ),
     );
   }
-
-
-
-
-
 }
-
