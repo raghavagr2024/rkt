@@ -19,10 +19,16 @@ const isAuthenticated = async (req, res, next) => {
 };
 
 const createContentSchema = [
-    body('name')
+    body('title')
         .notEmpty()
-        .withMessage('Name is required'),
+        .withMessage('Title is required'),
     // Add more validation rules for other fields if needed
+];
+
+const updateContentSchema = [
+    body('id')
+        .notEmpty()
+        .withMessage('ID required for update.'),
 ];
 
 router.post('/content', isAuthenticated, createContentSchema, async (req, res) => {
@@ -30,7 +36,7 @@ router.post('/content', isAuthenticated, createContentSchema, async (req, res) =
     if (!errors.isEmpty()) {
         return res.status(400).json({ message: errors.array() });
     }
-    const { title, body } = req.body 
+    const { title, body } = req.body;
     try {
         const { data, error } = await supabase.from('content').insert([
             {
@@ -70,12 +76,39 @@ router.get('/content/:id', isAuthenticated, async (req, res) => {
         const { data, error } = await supabase.from('content').select().eq("id", req.params.id);
 
         if (error) {
-            throw new Error(error);
+            throw new Error(error.message); // Retrieve the error message from the error object
         }
 
         return res.send(data);
     } catch (error) {
-        return res.send({ error });
+        console.error("Read error: ", error.message);
+        return res.status(500).json({ message: 'Internal server error.', error: error.message }); // Include the error message in the response
+    }
+});
+
+
+router.put('/content/:id', isAuthenticated, updateContentSchema, async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+        return res.status(400).json({ message: errors.array() });
+    try {
+        const now = new Date();
+        const isoNow = now.toISOString();
+        const formattedNow = isoNow.replace('Z', '+00:00');
+        const { id, title, body } = req.body;
+
+        const { data, error } = await supabase.from('content').update({
+            Title: title ? title : data[0].Title,
+            Body: body ? body : data[0].Body,
+            updated_at: formattedNow
+        }).eq('id', id);
+
+        if (error)
+            throw new Error(error);
+        return res.status(200).json(req.body);
+    } catch (error) {
+        console.log("Error updating: ", error.message);
+        return res.send({ message: "Internal server error." });
     }
 });
 
