@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:rkt/content.dart';
-import 'package:rkt/login_user.dart';
-import 'package:rkt/signUpTeacher.dart';
+
+
 import 'package:rkt/signup.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
 
 class AccountChoice extends StatelessWidget {
   @override
@@ -20,7 +19,7 @@ class AccountChoice extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => SignUpTeacherPage()));
+                          builder: (context) => SignUpPage(isTeacher: true)));
                 },
                 child: const Text(
                   "Sign Up as a teacher",
@@ -32,7 +31,7 @@ class AccountChoice extends StatelessWidget {
             TextButton(
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SignUpPage()));
+                      MaterialPageRoute(builder: (context) => SignUpPage(isTeacher: false)));
                 },
                 child: const Text("Sign Up as a parent",
                     style: TextStyle(fontSize: 30))),

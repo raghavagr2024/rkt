@@ -1,0 +1,1 @@
+{"version":"1.0.0","name":"rkt-backend","dependencies":{"@supabase/supabase-js":{"version":"2.26.0"},"dotenv":{"version":"16.3.1"},"express-validator":{"version":"7.0.1"},"express":{"version":"4.18.2"},"serverless-http":{"version":"3.2.0"},"sharp":{"version":"0.32.1"}}}

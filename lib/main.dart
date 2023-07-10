@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:rkt/accountChoice.dart';
 import 'package:rkt/login_user.dart';
-import 'package:rkt/signup.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+final supabase = Supabase.instance.client;
 Future<void> main() async {
   await Supabase.initialize(
     url: 'https://fqblcjjyxmyelgnwoyru.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxYmxjamp5eG15ZWxnbndveXJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODc1NjgwNzYsImV4cCI6MjAwMzE0NDA3Nn0.xpsBchAJfqv_f97qL2boxvBMpBzs9zBQqZ3dFs8kBAI',
   );
+
   runApp(MyApp());
 }
 

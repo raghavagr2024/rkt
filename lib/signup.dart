@@ -13,6 +13,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 late TextEditingController _email, _password;
 class SignUpPage extends StatelessWidget{
+  late bool isTeacher;
+
+  SignUpPage({required this.isTeacher});
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -157,13 +160,13 @@ class LoginButton extends StatelessWidget {
 
     try{
       final supabase = Supabase.instance.client;
-      final AuthResponse res = await supabase.auth.signUp(
+      await supabase.auth.signUp(
         email: _email.text,
         password: _password.text,
       );
       Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ContentPage()));
+          MaterialPageRoute(builder: (context) => ContentPage(isTeacher: false,)));
     }
     on AuthException catch(e){
       addSignUpDialog(context,e.message);

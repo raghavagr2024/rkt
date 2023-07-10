@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:rkt/content.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'main.dart';
+
 
 
 
@@ -156,14 +158,14 @@ class LoginButton extends StatelessWidget {
   Future<void> login(context) async {
 
     try{
-      final supabase = Supabase.instance.client;
-      final AuthResponse res = await supabase.auth.signInWithPassword(
+
+      await supabase.auth.signInWithPassword(
         email: _email.text,
         password: _password.text,
       );
       Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ContentPage()));
+          MaterialPageRoute(builder: (context) => ContentPage(isTeacher: true,)));
     }
     on AuthException catch(e){
       addLoginDialog(context,e.message);
