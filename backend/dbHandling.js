@@ -112,4 +112,6 @@ router.put('/content/:id', isAuthenticated, updateContentSchema, async (req, res
     }
 });
 
+router.post('/content/file', isAuthenticated, createContentSchema, async (req, res) => { return; });
+
 module.exports = router;
