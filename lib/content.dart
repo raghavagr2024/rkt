@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:rkt/module_page.dart';
+import 'package:rkt/teacherNewPage.dart';
 
 class ContentPage extends StatefulWidget {
   late bool isTeacher;
@@ -34,14 +35,19 @@ class _ContentPage extends State<ContentPage> {
             data = jsonDecode(snapshot.data);
 
             return Scaffold(
+              floatingActionButton: _getButton(),
               body: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 40,
                   ),
-                  ModuleList()
+                  ModuleList(isTeacher: isTeacher),
+
+
                 ],
               ),
+
+
             );
           } else {
             return CircularProgressIndicator();
@@ -50,13 +56,26 @@ class _ContentPage extends State<ContentPage> {
   }
 
   //Method for the API call
-
   Future<dynamic> getDB() async {
     print("in get db");
-    var ans=  await http.get(Uri.https("rkt-backend-production.vercel.app","api/db/content"));
+    var ans =  await http.get(Uri.https("rkt-backend-production.vercel.app","api/db/content"));
     print(ans.body.runtimeType);
     return ans.body;
 
+  }
+
+  Widget _getButton() {
+    if (isTeacher) {
+      return FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: (){
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TeacherNewPage()));
+          });
+    } else {
+      return Container();
+    }
   }
 
 
@@ -69,13 +88,18 @@ class _ContentPage extends State<ContentPage> {
 }
 
 class ModuleList extends StatefulWidget {
+
+  late final isTeacher;
+  ModuleList({required this.isTeacher});
   @override
   State<StatefulWidget> createState() {
-    return _ModuleList();
+    return _ModuleList(isTeacher: isTeacher);
   }
 }
 
 class _ModuleList extends State<ModuleList> {
+  late final isTeacher;
+  _ModuleList({required this.isTeacher});
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -89,7 +113,7 @@ class _ModuleList extends State<ModuleList> {
   Widget _getModules(context, index) {
     return Module(
       context: context,
-      index: index,
+      index: index, isTeacher: isTeacher,
     );
   }
 }
@@ -97,8 +121,9 @@ class _ModuleList extends State<ModuleList> {
 class Module extends StatelessWidget {
   late int index;
   late BuildContext context;
+  late final isTeacher;
 
-  Module({required this.context, required this.index});
+  Module({required this.context, required this.index,required this.isTeacher});
 
   @override
   Widget build(context) {
@@ -111,7 +136,23 @@ class Module extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => ModulePageParent(data:data[index]))
                   );
             },
-            child: Text(data[index]['Title'], style: TextStyle(fontSize: 30),))
+            child: Text(data[index]['Title'], style: const TextStyle(fontSize: 30),)),
+
+        if(isTeacher)...[
+          IconButton(onPressed: (){
+              print("in remove button");
+          },
+              icon: const Icon(Icons.remove_circle)),
+          IconButton(onPressed: (){
+            print("in update");
+          },
+              icon: const Icon(Icons.edit))
+        ],
+        const SizedBox(height: 50,),
+
+
+
+
       ],
     );
   }

@@ -33,8 +33,10 @@ class SignUpPage extends StatelessWidget{
           const SizedBox(height: 20),
           PasswordTextField(),
           const SizedBox(height:30),
-          LoginButton(),
+          LoginButton(isTeacher: isTeacher,),
           const SizedBox(height: 30),
+
+
 
         ],
       ),
@@ -107,6 +109,9 @@ class _PasswordTextField extends State<PasswordTextField>{
 }
 
 class LoginButton extends StatelessWidget {
+
+  late bool isTeacher;
+  LoginButton({required this.isTeacher});
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -166,7 +171,7 @@ class LoginButton extends StatelessWidget {
       );
       Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ContentPage(isTeacher: false,)));
+          MaterialPageRoute(builder: (context) => ContentPage(isTeacher: isTeacher,)));
     }
     on AuthException catch(e){
       addSignUpDialog(context,e.message);
