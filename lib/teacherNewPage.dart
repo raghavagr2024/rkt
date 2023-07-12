@@ -7,10 +7,21 @@ import 'package:http/http.dart' as http;
 
 var _title = TextEditingController();
 var _body = TextEditingController();
-
+int _id = -1;
 class TeacherNewPage extends StatefulWidget {
+  TeacherNewPage.edit(index,title,body){
+    _title.text = title;
+    _body.text = body;
+    _id = index;
+  }
+  TeacherNewPage();
+
+
+
+
   @override
   State<StatefulWidget> createState() {
+
     return _TeacherNewPage();
   }
 }
@@ -41,7 +52,7 @@ class _TeacherNewPage extends State<TeacherNewPage> {
                 child: Text("Body"),
               )),
           BodyField(),
-          AddButton()
+          WriteButton()
         ],
       ),
     );
@@ -94,14 +105,21 @@ class _BodyField extends State<BodyField> {
   }
 }
 
-class AddButton extends StatelessWidget {
+class WriteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
         onPressed: () async {
-          await addContent();
+          if(_id==-1){
+            await addContent();
+            print("add content done");
+          }
+          else{
+            await editContent();
+            print("edit content done");
+          }
         },
-        child: Text("Add content"));
+        child: _id == -1? const Text("Add content"): const Text("Edit content"));
   }
 
   Future<http.Response> addContent() {
@@ -115,4 +133,17 @@ class AddButton extends StatelessWidget {
           <String, String>{'title': _title.text, 'body': _body.text}),
     );
   }
+  Future<http.Response> editContent() {
+    print("in edit Content");
+    print('https://rkt-backend-production.vercel.app/api/db/content/$_id');
+    return http.put(
+      Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/$_id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({'id': _id, 'title': _title.text, 'body': _body.text}),
+    );
+  }
+
+
 }

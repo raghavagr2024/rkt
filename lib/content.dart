@@ -144,7 +144,10 @@ class Module extends StatelessWidget {
           },
               icon: const Icon(Icons.remove_circle)),
           IconButton(onPressed: (){
-            print("in update");
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TeacherNewPage.edit(data[index]['id'],data[index]['Title'],data[index]['Body']))
+            );
           },
               icon: const Icon(Icons.edit))
         ],
