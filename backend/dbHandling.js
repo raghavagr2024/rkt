@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { createClient } = require('@supabase/supabase-js');
-const { body, validationResult } = require('express-validator');
+const { body, validationResult, param } = require('express-validator');
 
 require('dotenv').config();
 
@@ -25,8 +25,8 @@ const createContentSchema = [
     // Add more validation rules for other fields if needed
 ];
 
-const updateContentSchema = [
-    body('id')
+const idContentSchema = [
+    param('id')
         .notEmpty()
         .withMessage('ID required for update.'),
 ];
@@ -52,7 +52,7 @@ router.post('/content', isAuthenticated, createContentSchema, async (req, res) =
         return res.status(200).json(req.body);
     } catch (error) {
         console.error('Write error: ', error.message);
-        return res.status(500).json({ message: 'Internal server error.' });
+        return res.status(500).json({ message: 'Internal server error. Check console.' });
     }
 });
 
@@ -67,13 +67,14 @@ router.get('/content', isAuthenticated, async (_, res) => {
         return res.send(data);
     } catch (error) {
         console.error('Read error: ', error.message);
-        return res.status(500).json({ message: 'Internal server error.' });
+        return res.status(500).json({ message: 'Internal server error.  Check console.' });
     }
 });
 
-router.get('/content/:id', isAuthenticated, async (req, res) => {
+router.get('/content/:id', isAuthenticated, idContentSchema, async (req, res) => {
     try {
-        const { data, error } = await supabase.from('content').select().eq("id", req.params.id);
+        const { id } = req.params;
+        const { data, error } = await supabase.from('content').select().eq("id", id);
 
         if (error) {
             throw new Error(error.message); // Retrieve the error message from the error object
@@ -87,15 +88,16 @@ router.get('/content/:id', isAuthenticated, async (req, res) => {
 });
 
 
-router.put('/content/:id', isAuthenticated, updateContentSchema, async (req, res) => {
+router.put('/content/:id', isAuthenticated, idContentSchema, async (req, res) => {
     const errors = validationResult(req);
+    const { id } = req.params;
     if (!errors.isEmpty())
         return res.status(400).json({ message: errors.array() });
     try {
         const now = new Date();
         const isoNow = now.toISOString();
         const formattedNow = isoNow.replace('Z', '+00:00');
-        const { id, title, body } = req.body;
+        const { title, body } = req.body;
 
         const { data, error } = await supabase.from('content').update({
             Title: title ? title : data[0].Title,
@@ -105,14 +107,12 @@ router.put('/content/:id', isAuthenticated, updateContentSchema, async (req, res
 
         if (error)
             throw new Error(error);
-        return res.status(200).json(req.body);
+        return res.status(200).json({ message: `Updated id: ${id} successfully` });
     } catch (error) {
         console.log("Error updating: ", error.message);
-        return res.send({ message: "Internal server error." });
+        return res.send({ message: "Internal server error. Check console." });
     }
 });
-
-router.post('/content/file', isAuthenticated, createContentSchema, async (req, res) => { return; });
 
 router.delete('/content/delete/:id', isAuthenticated, idContentSchema, async (req, res) => {
     const { id } = req.params;
