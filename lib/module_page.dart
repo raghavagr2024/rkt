@@ -1,36 +1,67 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:rkt/main.dart';
 
 import 'content.dart';
 
-class ModulePageParent extends StatelessWidget {
 
-  late final data;
+class ModulePageParent extends StatefulWidget{
+  late final id;
 
-  ModulePageParent({required this.data});
+  ModulePageParent({
+    required this.id,
+  });
+  @override
+  State<StatefulWidget> createState() {
+    return _ModulePageParent(id: id);
+  }
+
+}
+class _ModulePageParent extends State<ModulePageParent> {
+
+  late final id;
+  var _data;
+  _ModulePageParent({
+    required this.id,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        child: Scaffold(
-            body: Align(
-              alignment: Alignment.centerLeft,
-              child: Column(
-                children: [
-                  Text(data["Title"]),
-                  SizedBox(height: 40,),
-                  Text(data['Body']),
-                ],
+
+    return FutureBuilder<dynamic>(
+        future: getContentByID(id),
+        builder: (context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+
+            _data = jsonDecode(snapshot.data);
+            return WillPopScope(
+              child: Scaffold(
+                  body: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      children: [
+                        Text(_data[0]["Title"]),
+                        SizedBox(height: 40,),
+                        Text(_data[0]['Body']),
+                      ],
+                    ),
+                  )
               ),
-            )
-        ),
-      onWillPop: () {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) {
-              return ContentPage(isTeacher: false);
-            }));
-        return Future.value(true); //this line will help
-      },
-    );
+              onWillPop: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) {
+                      return ContentPage(isTeacher: false);
+                    }));
+                return Future.value(true); //this line will help
+              },
+            );
+
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
+
   }
 
 }

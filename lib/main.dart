@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:rkt/accountChoice.dart';
 import 'package:rkt/login_user.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 final supabase = Supabase.instance.client;
 Future<void> main() async {
@@ -71,3 +73,57 @@ class MyHomePage extends StatelessWidget {
     );
   }
 }
+
+Future<http.Response> addContent(var title, var body) {
+  print("in addContent");
+  return http.post(
+    Uri.parse('https://rkt-backend-production.vercel.app/api/db/content'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(
+        <String, String>{'title': title.text, 'body': body.text}),
+  );
+}
+
+Future<http.Response> editContent(var id, var title, var body) {
+  print("in edit Content");
+  print('https://rkt-backend-production.vercel.app/api/db/content/$id');
+  return http.put(
+    Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode({'title': title.text, 'body': body.text}),
+  );
+}
+
+Future<http.Response> deleteContent(var id) {
+  print("in delete Content");
+  print('https://rkt-backend-production.vercel.app/api/db/content/delete/$id');
+  return http.delete(
+    Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/delete/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+  );
+}
+
+Future<dynamic> getContent() async {
+  print("in get db");
+  var ans =  await http.get(Uri.parse('https://rkt-backend-production.vercel.app/api/db/content'));
+  print(ans.body.runtimeType);
+  return ans.body;
+
+}
+Future<dynamic> getContentByID(var id) async {
+  print("in get db");
+  var ans =  await http.get(Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/$id'));
+  print(ans.body.runtimeType);
+  return ans.body;
+
+}
+
+
+
+

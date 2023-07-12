@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
+import 'main.dart';
 import 'package:rkt/module_page.dart';
 import 'package:rkt/teacherNewPage.dart';
 
@@ -15,7 +15,7 @@ class ContentPage extends StatefulWidget {
   State<ContentPage> createState() => _ContentPage(isTeacher: isTeacher);
 }
 
-var data;
+var _data;
 
 class _ContentPage extends State<ContentPage> {
   late bool isTeacher;
@@ -27,12 +27,12 @@ class _ContentPage extends State<ContentPage> {
 
 
     return FutureBuilder<dynamic>(
-        future: getDB(),
+        future: getContent(),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
 
 
-            data = jsonDecode(snapshot.data);
+            _data = jsonDecode(snapshot.data);
 
             return Scaffold(
               floatingActionButton: _getButton(),
@@ -42,7 +42,6 @@ class _ContentPage extends State<ContentPage> {
                     height: 40,
                   ),
                   ModuleList(isTeacher: isTeacher),
-
 
                 ],
               ),
@@ -56,13 +55,7 @@ class _ContentPage extends State<ContentPage> {
   }
 
   //Method for the API call
-  Future<dynamic> getDB() async {
-    print("in get db");
-    var ans =  await http.get(Uri.https("rkt-backend-production.vercel.app","api/db/content"));
-    print(ans.body.runtimeType);
-    return ans.body;
 
-  }
 
   Widget _getButton() {
     if (isTeacher) {
@@ -104,7 +97,7 @@ class _ModuleList extends State<ModuleList> {
   Widget build(BuildContext context) {
     return ListView.builder(
       itemBuilder: _getModules,
-      itemCount: data.length,
+      itemCount: _data.length,
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
     );
@@ -133,20 +126,20 @@ class Module extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ModulePageParent(data:data[index]))
+                  MaterialPageRoute(builder: (context) => ModulePageParent(id:_data[index]['id']))
                   );
             },
-            child: Text(data[index]['Title'], style: const TextStyle(fontSize: 30),)),
+            child: Text(_data[index]['Title'], style: const TextStyle(fontSize: 30),)),
 
         if(isTeacher)...[
           IconButton(onPressed: (){
-              print("in remove button");
+              _confirmDialog();
           },
               icon: const Icon(Icons.remove_circle)),
           IconButton(onPressed: (){
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => TeacherNewPage.edit(data[index]['id'],data[index]['Title'],data[index]['Body']))
+                MaterialPageRoute(builder: (context) => TeacherNewPage.edit(_data[index]['id']))
             );
           },
               icon: const Icon(Icons.edit))
@@ -157,6 +150,43 @@ class Module extends StatelessWidget {
 
 
       ],
+    );
+  }
+
+  Future<void> _confirmDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title:  Text('Delete module ${_data[index]["Title"]}?'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+
+
+              ],
+            ),
+          ),
+          actions: <Widget>[
+
+            TextButton(
+              child: const Text('Deny'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+
+            ),
+            TextButton(
+              child: const Text('Confirm'),
+              onPressed: () async {
+                await deleteContent(_data[index]['id']);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
