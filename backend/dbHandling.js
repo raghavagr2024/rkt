@@ -114,4 +114,21 @@ router.put('/content/:id', isAuthenticated, updateContentSchema, async (req, res
 
 router.post('/content/file', isAuthenticated, createContentSchema, async (req, res) => { return; });
 
+router.delete('/content/delete/:id', isAuthenticated, idContentSchema, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const { data, error } = await supabase.from('content').delete().eq('id', id);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return res.status(200).json({ message: `Deleted ${id} successfully.` });
+    } catch (error) {
+        console.log('Delete error: ', error.message);
+        return res.send({ message: 'Internal server error. Check console.' });
+    }
+});
+
 module.exports = router;
