@@ -3,6 +3,7 @@ import 'package:rkt/accountChoice.dart';
 import 'package:rkt/login_user.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 final supabase = Supabase.instance.client;
 Future<void> main() async {
   await Supabase.initialize(
@@ -47,24 +48,39 @@ class MyHomePage extends StatelessWidget {
             const SizedBox(
               height: 200,
             ),
-            TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AccountChoice()));
-                },
-                child: const Text(
-                  "sign up",
-                  style: TextStyle(fontSize: 30),
-                )),
-            const SizedBox(
-              height: 50,
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AccountChoice()));
+                  },
+                  child: const Text(
+                    "Sign Up",
+                    style: TextStyle(fontSize: 50, color: Colors.white),
+                  )),
             ),
-            TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginPage()));
-                },
-                child: const Text("Log in", style: TextStyle(fontSize: 30))),
+            const SizedBox(
+              height: 100,
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: TextButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
+                  },
+                  child: const Text("Log in",
+                      style: TextStyle(fontSize: 50, color: Colors.white))),
+            ),
           ],
         ),
       ),
