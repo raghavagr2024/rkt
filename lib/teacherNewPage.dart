@@ -33,11 +33,14 @@ class _TeacherNewPage extends State<TeacherNewPage> {
         future: getContentByID(_id),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
-
             var _data = jsonDecode(snapshot.data);
+            if(_id!=-1){
+              _title.text = _data[0]["Title"];
+              _body.text = _data[0]["Body"];
+            }
+
             print(_data.toString());
-            _title.text = _data[0]["Title"];
-            _body.text = _data[0]["Body"];
+
             return Scaffold(
               body: Column(
                 children: [
