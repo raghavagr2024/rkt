@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import 'main.dart';
 import 'package:rkt/module_page.dart';
@@ -62,9 +63,11 @@ class _ContentPage extends State<ContentPage> {
       return FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: (){
-            Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TeacherNewPage()));
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TeacherNewPage()));
+            });
           });
     } else {
       return Container();
@@ -137,10 +140,13 @@ class Module extends StatelessWidget {
           },
               icon: const Icon(Icons.remove_circle)),
           IconButton(onPressed: (){
-            Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TeacherNewPage.edit(_data[index]['id']))
-            );
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TeacherNewPage.edit(_data[index]['id']))
+              );
+            });
+
           },
               icon: const Icon(Icons.edit))
         ],

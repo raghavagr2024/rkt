@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:rkt/content.dart';
 
 
 import 'main.dart';
@@ -131,11 +133,19 @@ class WriteButton extends StatelessWidget {
           if(_id==-1){
             await addContent(_title,_body);
             print("add content done");
+            
           }
           else{
             await editContent(_id,_title,_body);
             print("edit content done");
           }
+
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ContentPage(isTeacher: true)));
+          });
+
         },
         child: _id == -1? const Text("Add content"): const Text("Edit content"));
   }
