@@ -52,10 +52,28 @@ class MyHomePage extends StatelessWidget {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => AccountChoice()));
                 },
-                child: const Text(
-                  "sign up",
-                  style: TextStyle(fontSize: 30),
-                )),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.blue,
+                  backgroundColor: Colors.blue,
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), // Set padding
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0), // Set border radius
+                  ),
+                  elevation: 3,
+                ),
+                child:
+                const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.person_add,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                  "Sign Up",
+                  style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                )])),
             const SizedBox(
               height: 50,
             ),
@@ -64,7 +82,30 @@ class MyHomePage extends StatelessWidget {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => LoginPage()));
                 },
-                child: const Text("Log in", style: TextStyle(fontSize: 30))),
+
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.blue,
+                  backgroundColor: Colors.blue,
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), // Set padding
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0), // Set border radius
+                  ),
+                  elevation: 3,
+                ),
+                child: 
+                const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.login,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                  "Log In",
+                  style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                )])),
+  
           ],
         ),
       ),
