@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -16,7 +17,7 @@ class ContentPage extends StatefulWidget {
   State<ContentPage> createState() => _ContentPage(isTeacher: isTeacher);
 }
 
-var _data;
+var _data = [];
 
 class _ContentPage extends State<ContentPage> {
   late bool isTeacher;
@@ -25,14 +26,14 @@ class _ContentPage extends State<ContentPage> {
 
   @override
   Widget build(BuildContext context) {
-
+  setState(() {
+    _data.clear();
+  });
 
     return FutureBuilder<dynamic>(
         future: getContent(),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
-
-
             _data = jsonDecode(snapshot.data);
 
             return Scaffold(
@@ -50,7 +51,7 @@ class _ContentPage extends State<ContentPage> {
 
             );
           } else {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
         });
   }
@@ -61,7 +62,7 @@ class _ContentPage extends State<ContentPage> {
   Widget _getButton() {
     if (isTeacher) {
       return FloatingActionButton(
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
           onPressed: (){
             SchedulerBinding.instance.addPostFrameCallback((_) {
               Navigator.push(
@@ -114,12 +115,27 @@ class _ModuleList extends State<ModuleList> {
   }
 }
 
-class Module extends StatelessWidget {
+class Module extends StatefulWidget{
+  late int index;
+  late BuildContext context;
+  late final isTeacher;
+  Module({required this.context, required this.index,required this.isTeacher});
+  @override
+  State<StatefulWidget> createState() {
+    return _Module(
+      context: context,
+      index: index, isTeacher: isTeacher,
+    );
+  }
+
+}
+
+class _Module extends State<Module> {
   late int index;
   late BuildContext context;
   late final isTeacher;
 
-  Module({required this.context, required this.index,required this.isTeacher});
+  _Module({required this.context, required this.index,required this.isTeacher});
 
   @override
   Widget build(context) {
@@ -159,38 +175,46 @@ class Module extends StatelessWidget {
     );
   }
 
-  Future<void> _confirmDialog() async {
+  Future<void> _confirmDialog()  {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return AlertDialog(
-          title:  Text('Delete module ${_data[index]["Title"]}?'),
-          content: const SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
+        return StatefulBuilder(
+            builder: (context,setState){
+          return AlertDialog(
+            title:  Text('Delete module ${_data[index]["Title"]}?'),
+            content: const SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
 
 
-              ],
+                ],
+              ),
             ),
-          ),
-          actions: <Widget>[
+            actions: <Widget>[
 
-            TextButton(
-              child: const Text('Deny'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              TextButton(
+                child: const Text('Deny'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
 
-            ),
-            TextButton(
-              child: const Text('Confirm'),
-              onPressed: () async {
-                await deleteContent(_data[index]['id']);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+              ),
+              TextButton(
+                child: const Text('Confirm'),
+                onPressed: () async {
+                  print("in confirm");
+                  await deleteContent(_data[index]['id']);
+                  Navigator.of(context).pop();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ContentPage(isTeacher: true)));
+                },
+              ),
+            ],
+          );
+        }
         );
       },
     );

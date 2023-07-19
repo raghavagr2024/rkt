@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rkt/main.dart';
 
 import 'content.dart';
-
+import 'package:flutter_html/flutter_html.dart';
 
 class ModulePageParent extends StatefulWidget{
   late final id;
@@ -41,9 +41,8 @@ class _ModulePageParent extends State<ModulePageParent> {
                     alignment: Alignment.centerLeft,
                     child: Column(
                       children: [
-                        Text(_data[0]["Title"]),
-                        SizedBox(height: 40,),
-                        Text(_data[0]['Body']),
+                        Html(data: _data[0]['Body']),
+
                       ],
                     ),
                   )
@@ -58,7 +57,7 @@ class _ModulePageParent extends State<ModulePageParent> {
             );
 
           } else {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
         });
 
