@@ -1,13 +1,15 @@
 const express = require('express');
-const router = express.Router();
-const { createClient } = require('@supabase/supabase-js');
 const { body, validationResult, param } = require('express-validator');
+const multer = require('multer');
+const { createClient } = require('@supabase/supabase-js');
+
+const router = express.Router();
+const upload = multer();
 
 require('dotenv').config();
 
 const url = process.env.SUPABASE_URL;
 const anonKey = process.env.SUPABASE_ANON_KEY;
-
 const supabase = createClient(url, anonKey);
 
 const isAuthenticated = async (req, res, next) => {
@@ -19,31 +21,22 @@ const isAuthenticated = async (req, res, next) => {
 };
 
 const createContentSchema = [
-    body('title')
-        .notEmpty()
-        .withMessage('Title is required'),
+    body('title').notEmpty().withMessage('Title is required'),
     // Add more validation rules for other fields if needed
 ];
 
 const idContentSchema = [
-    param('id')
-        .notEmpty()
-        .withMessage('ID required for update.'),
+    param('id').notEmpty().withMessage('ID required for update.'),
 ];
 
 router.post('/content', isAuthenticated, createContentSchema, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ message: errors.array() });
+        return res.status(400).json({ errors: errors.array() });
     }
     const { title, body } = req.body;
     try {
-        const { data, error } = await supabase.from('content').insert([
-            {
-                Title: title,
-                Body: body,
-            },
-        ]);
+        const { data, error } = await supabase.from('content').insert([{ Title: title, Body: body }]);
 
         if (error) {
             throw new Error(error.message);
@@ -67,26 +60,25 @@ router.get('/content', isAuthenticated, async (_, res) => {
         return res.send(data);
     } catch (error) {
         console.error('Read error: ', error.message);
-        return res.status(500).json({ message: 'Internal server error.  Check console.' });
+        return res.status(500).json({ message: 'Internal server error. Check console.' });
     }
 });
 
 router.get('/content/:id', isAuthenticated, idContentSchema, async (req, res) => {
     try {
         const { id } = req.params;
-        const { data, error } = await supabase.from('content').select().eq("id", id);
+        const { data, error } = await supabase.from('content').select().eq('id', id);
 
         if (error) {
-            throw new Error(error.message); // Retrieve the error message from the error object
+            throw new Error(error.message);
         }
 
         return res.send(data);
     } catch (error) {
-        console.error("Read error: ", error.message);
-        return res.status(500).json({ message: 'Internal server error.', error: error.message }); // Include the error message in the response
+        console.error('Read error: ', error.message);
+        return res.status(500).json({ message: 'Internal server error.', error: error.message });
     }
 });
-
 
 router.put('/content/:id', isAuthenticated, idContentSchema, async (req, res) => {
     const errors = validationResult(req);
@@ -99,24 +91,36 @@ router.put('/content/:id', isAuthenticated, idContentSchema, async (req, res) =>
         const formattedNow = isoNow.replace('Z', '+00:00');
         const { title, body } = req.body;
 
-        const { data, error } = await supabase.from('content').update({
-            Title: title ? title : data[0].Title,
-            Body: body ? body : data[0].Body,
-            updated_at: formattedNow
-        }).eq('id', id);
+        // Retrieve existing data before updating
+        const { data: existingData, error: fetchError } = await supabase.from('content').select().eq('id', id);
 
+        if (fetchError) {
+            throw new Error(fetchError.message);
+        }
+
+        const { data, error } = await supabase
+            .from('content')
+            .update({
+                Title: title ? title : existingData[0].Title,
+                Body: body ? body : existingData[0].Body,
+                updated_at: formattedNow,
+            })
+            .eq('id', id);
+
+        if (error) {
+            throw new Error(error.message);
+        }
         if (error)
             throw new Error(error);
         return res.status(200).json({ message: `Updated id: ${id} successfully` });
     } catch (error) {
-        console.log("Error updating: ", error.message);
-        return res.send({ message: "Internal server error. Check console." });
+        console.log('Error updating: ', error.message);
+        return res.status(500).json({ message: 'Internal server error. Check console.' });
     }
 });
 
 router.delete('/content/delete/:id', isAuthenticated, idContentSchema, async (req, res) => {
     const { id } = req.params;
-
     try {
         const { data, error } = await supabase.from('content').delete().eq('id', id);
 
@@ -127,8 +131,60 @@ router.delete('/content/delete/:id', isAuthenticated, idContentSchema, async (re
         return res.status(200).json({ message: `Deleted ${id} successfully.` });
     } catch (error) {
         console.log('Delete error: ', error.message);
-        return res.send({ message: 'Internal server error. Check console.' });
+        return res.status(500).json({ message: 'Internal server error. Check console.' });
     }
 });
+
+const { decode } = require('base64-arraybuffer');
+
+router.post('/upload', upload.single('file'), async (req, res) => {
+    try {
+        console.log(req.file);
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        //var temp_path = req.file.path;
+        // Upload file to Supabase storage bucket using the standard upload method
+        const { data, error } = await supabase.storage.from('uploads').upload(req.file.path, decode('base64FileData'));
+
+        if (error) {
+            // Handle error
+            console.error(error.message);
+            return res.status(500).send('Error uploading file');
+        }
+
+        return res.status(200).json({ message: 'File uploaded successfully', url: data.url });
+    } catch (error) {
+        console.error('Write error: ', error.message);
+        return res.status(500).json({ message: 'Internal server error. Check console.' });
+    }
+});
+
+router.get('/upload', isAuthenticated, async (req, res) => {
+    try {
+        const { data, error } = await supabase.storage.from('uploads').list('images', {
+            limit: 100,
+            offset: 0,
+            sortBy: { column: 'name', order: 'asc' },
+        });
+
+        if (error) {
+            console.error(error.message);
+            return res.status(500).json({ message: 'Error reading files.' });
+        }
+
+        // Extract file names from the 'data' array
+        const fileNames = data.map(file => file.name);
+        console.log(data);
+        console.log(fileNames);
+
+        return res.status(200).send(fileNames);
+    } catch (error) {
+        console.error('File read error: ', error.message);
+        return res.status(500).json({ message: 'Internal server error. Check console.' });
+    }
+});
+
 
 module.exports = router;
