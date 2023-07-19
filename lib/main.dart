@@ -46,7 +46,13 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(
-              height: 200,
+              height: 100,
+            ),
+            Image(
+              image: AssetImage('images/rkt-logo.png'),
+            ),
+            const SizedBox(
+              height: 100,
             ),
             DecoratedBox(
               decoration: BoxDecoration(

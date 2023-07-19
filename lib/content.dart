@@ -24,14 +24,10 @@ class _ContentPage extends State<ContentPage> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return FutureBuilder<dynamic>(
         future: getDB(),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
-
-
             data = jsonDecode(snapshot.data);
 
             return Scaffold(
@@ -42,12 +38,8 @@ class _ContentPage extends State<ContentPage> {
                     height: 40,
                   ),
                   ModuleList(isTeacher: isTeacher),
-
-
                 ],
               ),
-
-
             );
           } else {
             return CircularProgressIndicator();
@@ -58,26 +50,24 @@ class _ContentPage extends State<ContentPage> {
   //Method for the API call
   Future<dynamic> getDB() async {
     print("in get db");
-    var ans =  await http.get(Uri.https("rkt-backend-production.vercel.app","api/db/content"));
+    var ans = await http
+        .get(Uri.https("rkt-backend-production.vercel.app", "api/db/content"));
     print(ans.body.runtimeType);
     return ans.body;
-
   }
 
   Widget _getButton() {
     if (isTeacher) {
       return FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: (){
-            Navigator.push(
-                context,
+          onPressed: () {
+            Navigator.push(context,
                 MaterialPageRoute(builder: (context) => TeacherNewPage()));
           });
     } else {
       return Container();
     }
   }
-
 
   //Method for the Supabase call
   /*
@@ -88,7 +78,6 @@ class _ContentPage extends State<ContentPage> {
 }
 
 class ModuleList extends StatefulWidget {
-
   late final isTeacher;
   ModuleList({required this.isTeacher});
   @override
@@ -113,7 +102,8 @@ class _ModuleList extends State<ModuleList> {
   Widget _getModules(context, index) {
     return Module(
       context: context,
-      index: index, isTeacher: isTeacher,
+      index: index,
+      isTeacher: isTeacher,
     );
   }
 }
@@ -123,7 +113,7 @@ class Module extends StatelessWidget {
   late BuildContext context;
   late final isTeacher;
 
-  Module({required this.context, required this.index,required this.isTeacher});
+  Module({required this.context, required this.index, required this.isTeacher});
 
   @override
   Widget build(context) {
@@ -133,26 +123,29 @@ class Module extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ModulePageParent(data:data[index]))
-                  );
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ModulePageParent(data: data[index])));
             },
-            child: Text(data[index]['Title'], style: const TextStyle(fontSize: 30),)),
-
-        if(isTeacher)...[
-          IconButton(onPressed: (){
-              print("in remove button");
-          },
+            child: Text(
+              data[index]['Title'],
+              style: const TextStyle(fontSize: 30),
+            )),
+        if (isTeacher) ...[
+          IconButton(
+              onPressed: () {
+                print("in remove button");
+              },
               icon: const Icon(Icons.remove_circle)),
-          IconButton(onPressed: (){
-            print("in update");
-          },
+          IconButton(
+              onPressed: () {
+                print("in update");
+              },
               icon: const Icon(Icons.edit))
         ],
-        const SizedBox(height: 50,),
-
-
-
-
+        const SizedBox(
+          height: 50,
+        ),
       ],
     );
   }
