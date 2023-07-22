@@ -135,18 +135,23 @@ router.delete('/content/delete/:id', isAuthenticated, idContentSchema, async (re
     }
 });
 
-const { decode } = require('base64-arraybuffer');
-
 router.post('/upload', upload.single('file'), async (req, res) => {
     try {
-        console.log(req.file);
+        // Testing code
+        // console.log(req.file);
+        
+        // Check if file exists
         if (!req.file) {
             return res.status(400).json({ message: 'No file uploaded' });
         }
 
-        //var temp_path = req.file.path;
         // Upload file to Supabase storage bucket using the standard upload method
-        const { data, error } = await supabase.storage.from('uploads').upload(req.file.path, decode('base64FileData'));
+
+        const formattedName = req.file.originalname.replace(/\s+/g, "_");
+
+        req.file.originalName = formattedName;
+
+        const { data, error } = await supabase.storage.from('uploads').upload(formattedName, req.file.buffer);
 
         if (error) {
             // Handle error
@@ -154,7 +159,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
             return res.status(500).send('Error uploading file');
         }
 
-        return res.status(200).json({ message: 'File uploaded successfully', url: data.url });
+        return res.status(200).json({ message: 'File uploaded successfully' });
     } catch (error) {
         console.error('Write error: ', error.message);
         return res.status(500).json({ message: 'Internal server error. Check console.' });
@@ -163,7 +168,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
 router.get('/upload', isAuthenticated, async (req, res) => {
     try {
-        const { data, error } = await supabase.storage.from('uploads').list('images', {
+        const { data, error } = await supabase.storage.from('uploads').list('', {
             limit: 100,
             offset: 0,
             sortBy: { column: 'name', order: 'asc' },
@@ -186,5 +191,24 @@ router.get('/upload', isAuthenticated, async (req, res) => {
     }
 });
 
+router.get('/upload/:folder/:name', isAuthenticated, async (req, res) => {
+    let dir = req.params.folder;
+    let name = req.params.name;
+
+    try {
+
+        if (dir === 'root') 
+            dir = '';
+
+        const { data, error } = await supabase.storage.from('uploads').createSignedUrl(`${dir}/${name}`, 600);
+
+        if (error) throw new Error(error.message);
+
+        return res.status(200).send(data);
+    } catch (error) {
+        console.log('Error creating file link: ', error.message);
+        return res.status(500).json({ message: 'Internal server error. Check console.' });
+    }
+});
 
 module.exports = router;
