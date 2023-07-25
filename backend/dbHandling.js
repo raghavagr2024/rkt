@@ -211,4 +211,25 @@ router.get('/upload/:folder/:name', isAuthenticated, async (req, res) => {
     }
 });
 
+router.post('/upload/base64', isAuthenticated, async (req, res) => {
+    try {
+        const { name, size, content } = req.body;
+
+        if (!name || !size || !content) return res.status(400).json({ message: 'Invalid or incomplete file data.' });
+
+        const { _, error } = await supabase.storage.from('uploads').upload(name, Buffer.from(content, 'base64'))
+
+
+        if (error) {
+            console.error(error.message);
+            return res.status(500).json({message: 'Error uploading file. Check console.'})
+        }
+
+        return res.status(200).json({ message: 'File uploaded successfully. '});
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: 'Internal server error. Check console.'})
+    }
+});
+
 module.exports = router;
