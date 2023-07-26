@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
-
+import 'dart:html';
+import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:rkt/account_choice.dart';
 import 'package:rkt/login_user.dart';
@@ -87,6 +91,20 @@ Future<http.Response> addContent(var title, var body) {
   );
 }
 
+Future<dynamic> addFile(List<int> file, String fileName) async {
+  log("in addFile");
+  final dio = Dio();
+  FormData formData = FormData.fromMap({
+    "file": MultipartFile.fromBytes(
+      file,
+      filename: fileName,
+      contentType: new MediaType("image", "jpeg"),
+    )
+  });
+  var response = await dio.post("https://rkt-backend-production.vercel.app/api/db/upload",data: formData);
+  return response.data;
+}
+
 Future<http.Response> editContent(var id, var title, var body) {
   log("in edit Content");
   return http.put(
@@ -122,7 +140,21 @@ Future<dynamic> getContentByID(var id) async {
 
   return ans.body;
 
+
+
 }
+
+Future<dynamic> getFileURL(String s) async {
+  log("in get db");
+  var ans =  await http.get(Uri.parse('https://rkt-backend-production.vercel.app/api/db/upload/images/$s'));
+
+  return ans.body;
+
+}
+
+
+
+
 
 
 

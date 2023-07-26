@@ -35,6 +35,17 @@ class _ModulePageParent extends State<ModulePageParent> {
           if (snapshot.hasData) {
 
             _data = jsonDecode(snapshot.data);
+            String temp = _data[0]['Body'];
+            print(temp);
+
+            while(temp.contains("image-")){
+              RegExp exp = RegExp(r'image-(.*?)"');
+              RegExpMatch? match = exp.firstMatch(temp);
+              String s = match![0].toString();
+              print(s);
+              temp = temp.replaceAll(s, getFileURL(s) as String);
+              print(temp);
+            }
             return WillPopScope(
               child: Scaffold(
                   body: Align(

@@ -40,6 +40,8 @@ dependencies:
   html_editor_enhanced: ^2.5.1
   html: ^0.15.4
   flutter_html: ^3.0.0-beta.2
+  file_picker: ^5.3.3
+  dio: ^5.3.0
 
 
 

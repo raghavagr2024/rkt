@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:html';
 
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -17,6 +19,7 @@ var _title = TextEditingController();
 var _body = TextEditingController();
 int _id = -1;
 var initJson;
+var files = [];
 class TeacherNewPage extends StatefulWidget {
   TeacherNewPage.edit(index){
     _id = index;
@@ -51,7 +54,7 @@ class _TeacherNewPage extends State<TeacherNewPage> {
   }
 }
 
-////////Find a way to get initial text loaded
+
 
 
 
@@ -67,12 +70,25 @@ class HtmlEditorExample extends StatefulWidget {
 
 class _HtmlEditorExampleState extends State<HtmlEditorExample> {
 
-
+  String oldName = "";
+  String newName = "";
+  bool imageAdded = false;
   final HtmlEditorController controller = HtmlEditorController();
   final ScrollController scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
+    Future<void> editName() async {
+      print(oldName);
+      print(newName);
 
+      String text = await controller.getText();
+      text = text.replaceFirst(oldName, newName);
+
+      controller.setText(text);
+
+
+      imageAdded = false;
+    }
     return GestureDetector(
       onTap: () {
         if (!kIsWeb) {
@@ -105,14 +121,63 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                   initialText: _id!=-1?initJson[0]['Body']:"",
                 ),
 
-                htmlToolbarOptions:  const HtmlToolbarOptions(
-
+                htmlToolbarOptions:   HtmlToolbarOptions(
+                  defaultToolbarButtons: [
+                    StyleButtons(),
+                    FontSettingButtons(),
+                    FontButtons(),
+                    ColorButtons(),
+                    ListButtons(),
+                    ParagraphButtons(),
+                    InsertButtons()
+                  ],
                   toolbarPosition: ToolbarPosition.aboveEditor, //by default
                   toolbarType: ToolbarType.nativeGrid, //by default
-                  dropdownMenuDirection: DropdownMenuDirection.down
+                  dropdownMenuDirection: DropdownMenuDirection.down,
+
+                  mediaUploadInterceptor:
+                      (PlatformFile file, InsertFileType type) async {
+
+                    oldName = file.name;//filename
+
+                    print(file.extension); //file extension (eg jpeg or mp4)
+                    try {
+                      file = PlatformFile(name: "image-${DateTime.now().millisecondsSinceEpoch}.${file.extension!}", bytes: file.bytes, size: file.size);
+                      print('File renamed successfully!');
+                    } catch (e) {
+                      print('Failed to rename the file: $e');
+                    }
+                    files.add(file);
+                    newName = file.name;
+
+                    print(files.length);
+                    imageAdded = true;
+
+                    return true;
+                  },
+
 
                 ),
-                //otherOptions: const OtherOptions(height: 550),
+
+
+                callbacks: Callbacks(
+                 onChangeContent: (String? changed) async {
+                      if(imageAdded){
+                        await editName();
+                      }
+                      else if(files.isNotEmpty){
+                        String text = await controller.getText();
+                        for(int i = 0; i < files.length;i++){
+                          if(!text.contains(files[i].name)){
+                            print("file removed: ${files[i].name}");
+                            files.removeAt(i);
+                            break;
+                          }
+                        }
+                      }
+
+                 }
+                ),
               ),
 
 
@@ -128,17 +193,40 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                           backgroundColor:
                           Theme.of(context).colorScheme.secondary),
                       onPressed: () async {
+
+
+
+
+
+                        String text = await controller.getText();
+                        String total = "";
+                        for(int i = 0; i<files.length;i++){
+                            String temp = text.substring(0, text.indexOf('">')+2);
+                            String ans = replaceTag(temp,i);
+                            total += ans;
+                            text = text.substring(text.indexOf('">')+2);
+                            print(text);
+                        }
+                        total += text;
+
                         if(_id==-1){
-                          await addContent(getTitleRaw(await controller.getText()),await controller.getText());
+                          await addContent(getTitleRaw(total),total);
                         }
                         else{
-                          await editContent(_id, getTitleRaw(await controller.getText()),await controller.getText());
+                          await editContent(_id, getTitleRaw(total),total);
                         }
+                        print("after add content");
+                        for(int i = 0; i<files.length;i++){
+                          print(files[i].name);
+                          await addFile(files[i].bytes, files[i].name);
+                        }
+                         print("done");
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => ContentPage(isTeacher: true)));
                           });
+
                       },
                       child: const Text("Submit",style: TextStyle(color: Colors.white)),
                     ),
@@ -154,6 +242,23 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
     );
   }
 
+  String replaceTag(String text,int index){
+    if(text.contains("style")){
+      RegExp exp = RegExp(r'(data:image\/png;base64,)(.*)(?=style)');
+      RegExpMatch? match = exp.firstMatch(text);
+      String s = match![0].toString();
+      text = text.replaceAll(s, "");
+      text = text.substring(0,text.indexOf("img src=")+8) + '"'+files[index].name + text.substring(text.indexOf("img src=")+8);
+      return text;
+    }
+    RegExp exp = RegExp(r"data:image\/png;base64,([^>]+)");
+    RegExpMatch? match = exp.firstMatch(text);
+    String s = match![0].toString();
+    text = text.replaceAll(s, "");
+    text = text.substring(0,text.indexOf("img src=")+8) + '"'+files[index].name + text.substring(text.indexOf("img src=")+8);
+    return text;
+  }
+
   String? getTitleRaw(String s){
     RegExp exp = RegExp('>(.*?)<');
     Iterable<RegExpMatch> matches = exp.allMatches(s);
@@ -164,4 +269,32 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
     }
     return "Failed";
   }
+
+
+}
+
+class LinkButton extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(onPressed: (){
+        pickFile();
+    }, icon: Icon(Icons.link));
+  }
+
+  Future<void> pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      PlatformFile file = result.files.first;
+
+      // Here, you can get the file information.
+      print('File Name: ${file.name}');
+      print('File Size: ${file.size}');
+      print('File Path: ${file.bytes}');
+      // You can handle the file as needed, like uploading it to a server or storing it locally.
+    } else {
+      // User canceled the file picking operation.
+    }
+  }
+
 }
