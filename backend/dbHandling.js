@@ -2,8 +2,10 @@ const express = require('express');
 const { body, validationResult, param } = require('express-validator');
 const multer = require('multer');
 const { createClient } = require('@supabase/supabase-js');
+const ffmpeg = require('fluent-ffmpeg');
 
 const router = express.Router();
+//const upload = multer({ dest: '/uploads' });
 const upload = multer();
 
 require('dotenv').config();
@@ -140,18 +142,19 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         // Testing code
         // console.log(req.file);
         
+        const { folderName } = req.body || { folderName: '' }
+
         // Check if file exists
         if (!req.file) {
             return res.status(400).json({ message: 'No file uploaded' });
         }
 
-        // Upload file to Supabase storage bucket using the standard upload method
-
+        // Remove spaces from file name
         const formattedName = req.file.originalname.replace(/\s+/g, "_");
-
         req.file.originalName = formattedName;
 
-        const { data, error } = await supabase.storage.from('uploads').upload(formattedName, req.file.buffer);
+        // Upload file to Supabase storage bucket using the standard upload method
+        const { data, error } = await supabase.storage.from('uploads').upload(folderName ? `${folderName}/${formattedName}` : formattedName, req.file.buffer);
 
         if (error) {
             // Handle error
@@ -165,6 +168,67 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         return res.status(500).json({ message: 'Internal server error. Check console.' });
     }
 });
+
+/*
+router.post('/upload', upload.single('file'), async (req, res) => {
+    try {
+        // Check if file exists
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        // Check if file size is greater than or equal to 10MB (10 * 1024 * 1024 bytes)
+        const fileSizeInBytes = req.file.size;
+        const maxSizeInBytes = 10 * 1024 * 1024;
+
+        if (fileSizeInBytes >= maxSizeInBytes) {
+            // Perform lossless compression using ffmpeg in-memory
+            ffmpeg(req.file.buffer)
+                .outputOptions('-c:v', 'libx264') // Use H.264 codec for video
+                .outputOptions('-c:a', 'copy') // Copy the original audio codec
+                .outputOptions('-preset', 'medium') // Set the compression preset
+                .format('mp4') // Specify the output format (you can change this as needed)
+                .on('end', async (stdout, stderr) => {
+                    const compressedFileName = req.file.originalname.replace(/\s+/g, "_");
+                    req.file.originalName = compressedFileName;
+
+                    // Upload the compressed file to Supabase storage bucket
+                    const { data, error } = await supabase.storage.from('uploads').upload(compressedFileName, stdout);
+                    
+                    if (error) {
+                        // Handle error
+                        console.error(error.message);
+                        return res.status(500).send('Error uploading file');
+                    }
+
+                    return res.status(200).json({ message: 'File uploaded successfully (compressed)' });
+                })
+                .on('error', (err) => {
+                    console.error('Error during compression:', err.message);
+                    return res.status(500).json({ message: 'Error during compression' });
+                })
+                .pipe(); // Pipe the output to the next operation (uploading)
+        } else {
+            // File size is smaller than 10MB, upload the file directly
+            const formattedName = req.file.originalname.replace(/\s+/g, "_");
+            req.file.originalName = formattedName;
+            
+            const { data, error } = await supabase.storage.from('uploads').upload(formattedName, req.file.buffer);
+            
+            if (error) {
+                // Handle error
+                console.error(error.message);
+                return res.status(500).send('Error uploading file');
+            }
+            
+            return res.status(200).json({ message: 'File uploaded successfully' });
+        }
+    } catch (error) {
+        console.error('Write error: ', error.message);
+        return res.status(500).json({ message: 'Internal server error. Check console.' });
+    }
+});
+*/
 
 router.get('/upload', isAuthenticated, async (req, res) => {
     try {
@@ -197,7 +261,7 @@ router.get('/upload/:folder/:name', isAuthenticated, async (req, res) => {
 
     try {
 
-        if (dir === 'root') 
+        if (dir === 'root')
             dir = '';
 
         const { data, error } = await supabase.storage.from('uploads').createSignedUrl(`${dir}/${name}`, 600);
