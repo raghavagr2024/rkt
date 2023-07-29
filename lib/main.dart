@@ -40,75 +40,115 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    String welcomeMessage = "Welcome!";
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 200,
-            ),
-            TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AccountChoice()));
-                },
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.blue,
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), // Set padding
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0), // Set border radius
-                  ),
-                  elevation: 3,
-                ),
-                child:
-                const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.person_add,
-                    color: Colors.white,
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                  "Sign Up",
-                  style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
-                )])),
-            const SizedBox(
-              height: 50,
-            ),
-            TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginPage()));
-                },
-
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.blue,
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), // Set padding
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0), // Set border radius
-                  ),
-                  elevation: 3,
-                ),
+      appBar: AppBar(
+        title: const Text(
+          "RKT Balmukund",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ), 
+        elevation: 8,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          image:  DecorationImage(
+            image: AssetImage("../../../lib/mainBackground2.jpeg"),
+            fit: BoxFit.cover,
+            opacity: 200
+            )
+        ),
+        child:Center(
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 50,
+              ),   
+              Container(
+                margin: const EdgeInsets.only(bottom: 150),
                 child: 
-                const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.login,
-                    color: Colors.white,
+                Text(
+                  welcomeMessage,
+                  style: const TextStyle(
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                    
                   ),
-                  SizedBox(width: 8),
-                  Text(
-                  "Log In",
-                  style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
-                )])),
-  
-          ],
+                ),
+              ),
+              TextButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => AccountChoice()));
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.blue,
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.only(right: 24.0, left: 24.0, bottom: 12, top: 12), // Set padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0), // Set border radius
+                    ),
+                    elevation: 3,
+                    
+                  ),
+                  child:
+                  const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.person_add,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                    "Sign Up",
+                    style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                  )])),
+              const SizedBox(
+                height: 50,
+              ),
+            
+              TextButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
+                  },
+
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.blue,
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(horizontal: 31.0, vertical: 12.0), // Set padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0), // Set border radius
+                    ),
+                    elevation: 3,
+                  ),
+                  child: 
+                  const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.login,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                    "Log In",
+                    style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                  )])),
+
+                  
+    
+            ],
+          ),
         ),
       ),
+      
     );
+
+    
   }
 }
