@@ -40,7 +40,7 @@ class _TeacherNewPage extends State<TeacherNewPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<dynamic>(
-        future: getContentByID(_id),
+        future:getContentByID(_id),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             initJson = jsonDecode(snapshot.data);
@@ -77,18 +77,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
   final ScrollController scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
-    Future<void> editName() async {
-      print(oldName);
-      print(newName);
 
-      String text = await controller.getText();
-      text = text.replaceFirst(oldName, newName);
-
-      controller.setText(text);
-
-
-      imageAdded = false;
-    }
     return GestureDetector(
       onTap: () {
         if (!kIsWeb) {
@@ -240,6 +229,18 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
         ),
       ),
     );
+  }
+  Future<void> editName() async {
+    print(oldName);
+    print(newName);
+
+    String text = await controller.getText();
+    text = text.replaceFirst(oldName, newName);
+
+    controller.setText(text);
+
+
+    imageAdded = false;
   }
 
   String replaceTag(String text,int index){

@@ -101,7 +101,7 @@ Future<dynamic> addFile(List<int> file, String fileName) async {
       contentType: new MediaType("image", "jpeg"),
     )
   });
-  var response = await dio.post("https://rkt-backend-production.vercel.app/api/db/upload",data: formData);
+  var response = await dio.post("https://rkt-backend-production.vercel.app/api/db/upload/images",data: formData);
   return response.data;
 }
 
@@ -134,24 +134,57 @@ Future<dynamic> getContent() async {
   return ans.body;
 
 }
-Future<dynamic> getContentByID(var id) async {
+Future<String> getContentByID(var id) async {
   log("in get db");
   var ans =  await http.get(Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/$id'));
+  print(ans.body);
+  if(ans.body=="[]"){
+    print("in null");
+    return "[]";
+  }
+  String temp = jsonDecode(ans.body)[0]["Body"];
+  int max = (countOccurences(temp, "img"));
+  int count = 0;
+  while(count<max){
+    RegExp exp = RegExp(r'image-(.*?)"');
+    RegExpMatch? match = exp.firstMatch(temp);
+    String s = match![0].toString();
 
-  return ans.body;
+    s = s.substring(0,s.length-1);
+
+    temp = temp.replaceAll(s, await getFileURL(s));
+    count++;
+  }
+  print(temp);
+  return temp;
 
 
 
 }
 
-Future<dynamic> getFileURL(String s) async {
+Future<String> getFileURL(String s) async {
   log("in get db");
   var ans =  await http.get(Uri.parse('https://rkt-backend-production.vercel.app/api/db/upload/images/$s'));
-
-  return ans.body;
-
+  print("ans");
+  var body = jsonDecode(ans.body);
+  String url = body["signedUrl"];
+  print(url);
+  return url;
 }
 
+
+int countOccurences(mainString, search) {
+  int lInx = 0;
+  int count =0;
+  while(lInx != -1){
+    lInx = mainString.indexOf(search,lInx);
+    if( lInx != -1){
+      count++;
+      lInx+=  search.length as int;
+    }
+  }
+  return count;
+}
 
 
 

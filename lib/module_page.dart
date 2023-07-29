@@ -34,26 +34,16 @@ class _ModulePageParent extends State<ModulePageParent> {
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
 
-            _data = jsonDecode(snapshot.data);
-            String temp = _data[0]['Body'];
-            print(temp);
-
-            while(temp.contains("image-")){
-              RegExp exp = RegExp(r'image-(.*?)"');
-              RegExpMatch? match = exp.firstMatch(temp);
-              String s = match![0].toString();
-              print(s);
-              temp = temp.replaceAll(s, getFileURL(s) as String);
-              print(temp);
-            }
+            _data = snapshot.data;
+            print(_data.runtimeType);
+            print(_data);
             return WillPopScope(
               child: Scaffold(
                   body: Align(
                     alignment: Alignment.centerLeft,
                     child: Column(
                       children: [
-                        Html(data: _data[0]['Body']),
-
+                        Html(data: _data),
                       ],
                     ),
                   )
