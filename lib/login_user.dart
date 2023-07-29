@@ -3,7 +3,7 @@
 
 
 import 'package:flutter/material.dart';
-
+import 'package:rkt/accountChoice.dart';
 
 import 'package:rkt/content.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -34,9 +34,23 @@ class LoginPage extends StatelessWidget{
           const SizedBox(height:30),
           LoginButton(),
           const SizedBox(height: 30),
+          
+          SizedBox(
+            height: 50,
+            child: TextButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => AccountChoice()));
+                },
+                child: const Text(
+                  "Don't have an account? Sign up here",
+                  style: TextStyle(fontSize: 20),
+                )),
+          ),
 
         ],
       ),
+      
     );
   }
 
@@ -67,7 +81,11 @@ class _EmailTextField extends State<EmailTextField>{
               ),
             ),
           ),
+          
+          
         )
+
+       
     );
   }
 
@@ -123,6 +141,8 @@ class LoginButton extends StatelessWidget {
         ),
         child: const Text("Log in")
     );
+
+    
   }
   Future<void> addLoginDialog(BuildContext context, String message) async {
     return showDialog<void>(
