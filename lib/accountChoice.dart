@@ -13,7 +13,7 @@ class AccountChoice extends StatelessWidget {
             colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.7), BlendMode.darken),
           child: 
             Image.asset(
-              "../../../lib/assets/mainBackground2.jpeg", 
+              "../../../lib/mainBackground2.jpeg", 
               fit: BoxFit.cover,
             ),
           ),
