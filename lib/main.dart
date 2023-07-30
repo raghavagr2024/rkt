@@ -1,8 +1,16 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:html';
+import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:rkt/accountChoice.dart';
+import 'package:rkt/account_choice.dart';
 import 'package:rkt/login_user.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 final supabase = Supabase.instance.client;
 Future<void> main() async {
   await Supabase.initialize(
@@ -50,7 +58,7 @@ class MyHomePage extends StatelessWidget {
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
-        ), 
+        ),
         elevation: 8,
       ),
       body: Container(
@@ -66,16 +74,16 @@ class MyHomePage extends StatelessWidget {
             children: [
               const SizedBox(
                 height: 50,
-              ),   
+              ),
               Container(
                 margin: const EdgeInsets.only(bottom: 150),
-                child: 
+                child:
                 Text(
                   welcomeMessage,
                   style: const TextStyle(
                     fontSize: 50,
                     fontWeight: FontWeight.bold,
-                    
+
                   ),
                 ),
               ),
@@ -92,7 +100,7 @@ class MyHomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0), // Set border radius
                     ),
                     elevation: 3,
-                    
+
                   ),
                   child:
                   const Row(
@@ -110,7 +118,7 @@ class MyHomePage extends StatelessWidget {
               const SizedBox(
                 height: 50,
               ),
-            
+
               TextButton(
                   onPressed: () {
                     Navigator.push(context,
@@ -126,7 +134,7 @@ class MyHomePage extends StatelessWidget {
                     ),
                     elevation: 3,
                   ),
-                  child: 
+                  child:
                   const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -140,15 +148,127 @@ class MyHomePage extends StatelessWidget {
                     style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
                   )])),
 
-                  
-    
+
+
             ],
           ),
         ),
       ),
-      
     );
-
-    
   }
 }
+
+Future<http.Response> addContent(var title, var body) {
+  log("in addContent");
+  return http.post(
+    Uri.parse('https://rkt-backend-production.vercel.app/api/db/content'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(
+        <String, String>{'title': title, 'body': body}),
+  );
+}
+
+Future<dynamic> addFile(List<int> file, String fileName) async {
+  log("in addFile");
+  final dio = Dio();
+  FormData formData = FormData.fromMap({
+    "file": MultipartFile.fromBytes(
+      file,
+      filename: fileName,
+      contentType: new MediaType("image", "jpeg"),
+    ),
+    "folderName" : "images"
+  });
+  var response = await dio.post("https://rkt-backend-production.vercel.app/api/db/upload",data: formData);
+  return response.data;
+}
+
+Future<http.Response> editContent(var id, var title, var body) {
+  log("in edit Content");
+  return http.put(
+    Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode({'title': title, 'body': body}),
+  );
+}
+
+Future<http.Response> deleteContent(var id) {
+  log("in delete Content");
+
+  return http.delete(
+    Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/delete/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+  );
+}
+
+Future<dynamic> getContent() async {
+  log("in get db");
+  var ans =  await http.get(Uri.parse('https://rkt-backend-production.vercel.app/api/db/content'));
+
+  return ans.body;
+
+}
+Future<String> getContentByID(var id) async {
+  log("in get db");
+  var ans =  await http.get(Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/$id'));
+  print(ans.body);
+  if(ans.body=="[]"){
+    print("in null");
+    return "[]";
+  }
+  String temp = jsonDecode(ans.body)[0]["Body"];
+  int max = (countOccurences(temp, "img"));
+  int count = 0;
+  while(count<max){
+    RegExp exp = RegExp(r'image-(.*?)"');
+    RegExpMatch? match = exp.firstMatch(temp);
+    String s = match![0].toString();
+
+    s = s.substring(0,s.length-1);
+
+    temp = temp.replaceAll(s, await getFileURL(s));
+    count++;
+  }
+  print(temp);
+  return temp;
+
+
+
+}
+
+Future<String> getFileURL(String s) async {
+  log("in get db");
+  var ans =  await http.get(Uri.parse('https://rkt-backend-production.vercel.app/api/db/upload/images/$s'));
+  print("ans");
+  var body = jsonDecode(ans.body);
+  String url = body["signedUrl"];
+  print(url);
+  return url;
+}
+
+
+int countOccurences(mainString, search) {
+  int lInx = 0;
+  int count =0;
+  while(lInx != -1){
+    lInx = mainString.indexOf(search,lInx);
+    if( lInx != -1){
+      count++;
+      lInx+=  search.length as int;
+    }
+  }
+  return count;
+}
+
+
+
+
+
+
+
