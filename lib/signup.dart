@@ -1,24 +1,17 @@
-
-
-
-
 import 'package:flutter/material.dart';
-
-
 import 'package:rkt/content.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
-
-
+// Declare TextEditingController variables
 late TextEditingController _email, _password;
-class SignUpPage extends StatelessWidget{
+
+class SignUpPage extends StatelessWidget {
   late bool isTeacher;
 
   SignUpPage({required this.isTeacher});
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -41,16 +34,16 @@ class SignUpPage extends StatelessWidget{
       ),
     );
   }
-
 }
-class EmailTextField extends StatefulWidget{
+
+class EmailTextField extends StatefulWidget {
   @override
   State<EmailTextField> createState() => _EmailTextField();
 }
-class _EmailTextField extends State<EmailTextField>{
 
+class _EmailTextField extends State<EmailTextField> {
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _email = TextEditingController();
   }
@@ -75,61 +68,61 @@ class _EmailTextField extends State<EmailTextField>{
       ),
     );
   }
-
 }
-class PasswordTextField extends StatefulWidget{
+
+class PasswordTextField extends StatefulWidget {
   @override
   State<PasswordTextField> createState() => _PasswordTextField();
 }
-class _PasswordTextField extends State<PasswordTextField>{
 
+class _PasswordTextField extends State<PasswordTextField> {
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _password = TextEditingController();
   }
+
   @override
   Widget build(BuildContext context) {
-    return Center (
-        child: SizedBox(
-          width: 250,
-          child: TextFormField(
-            controller: _password,
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Password',
-              labelStyle: TextStyle(),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(),
-              ),
-            ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: TextFormField(
+        controller: _password,
+        obscureText: true,
+        decoration: InputDecoration(
+          labelText: 'Password',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
-        )
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        ),
+      ),
     );
   }
-
 }
 
 class LoginButton extends StatelessWidget {
-
   late bool isTeacher;
+
   LoginButton({required this.isTeacher});
+
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-        onPressed: () async {
-          await signup(context);
-
-
-
-
-
-        },
-        style: ElevatedButton.styleFrom(
-
-            padding: const EdgeInsets.fromLTRB(60, 0, 60, 0)
+      onPressed: () async {
+        await signup(context);
+      },
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.fromLTRB(60, 0, 60, 0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
         ),
-        child: const Text("Sign up")
+      ),
+      child: const Text("Sign up"),
     );
   }
   Future<void> addSignUpDialog(BuildContext context,String message) async {
@@ -173,12 +166,11 @@ class LoginButton extends StatelessWidget {
       );
       Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => ContentPage(
-                    isTeacher: isTeacher,
-                  )));
-    } on AuthException catch (e) {
-      addSignUpDialog(context, e.message);
+          MaterialPageRoute(builder: (context) => ContentPage(isTeacher: isTeacher,)));
+    }
+    on AuthException catch(e){
+      addSignUpDialog(context,e.message);
+
     }
 
 
