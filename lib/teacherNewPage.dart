@@ -43,7 +43,7 @@ class _TeacherNewPage extends State<TeacherNewPage> {
         future:getContentByID(_id),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
-            initJson = jsonDecode(snapshot.data);
+            initJson = snapshot.data;
             return HtmlEditorExample(title: "title");
           } else {
             return const CircularProgressIndicator();
@@ -107,7 +107,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                 htmlEditorOptions: HtmlEditorOptions(
                   hint: 'Your text here...',
                   shouldEnsureVisible: true,
-                  initialText: _id!=-1?initJson[0]['Body']:"",
+                  initialText: _id!=-1?initJson:"",
                 ),
 
                 htmlToolbarOptions:   HtmlToolbarOptions(
@@ -182,11 +182,6 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                           backgroundColor:
                           Theme.of(context).colorScheme.secondary),
                       onPressed: () async {
-
-
-
-
-
                         String text = await controller.getText();
                         String total = "";
                         for(int i = 0; i<files.length;i++){
@@ -198,6 +193,8 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                         }
                         total += text;
 
+                        print(total);
+                        print("total");
                         if(_id==-1){
                           await addContent(getTitleRaw(total),total);
                         }
@@ -245,9 +242,14 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
 
   String replaceTag(String text,int index){
     if(text.contains("style")){
-      RegExp exp = RegExp(r'(data:image\/png;base64,)(.*)(?=style)');
+      RegExp exp = RegExp(r'width:\s*(.*?);');
       RegExpMatch? match = exp.firstMatch(text);
       String s = match![0].toString();
+      text = text.replaceAll(s, "width: 200px");
+
+       exp = RegExp(r'(data:image\/png;base64,)(.*)(?=style)');
+       match = exp.firstMatch(text);
+       s = match![0].toString();
       text = text.replaceAll(s, "");
       text = text.substring(0,text.indexOf("img src=")+8) + '"'+files[index].name + text.substring(text.indexOf("img src=")+8);
       return text;

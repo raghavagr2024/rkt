@@ -99,9 +99,10 @@ Future<dynamic> addFile(List<int> file, String fileName) async {
       file,
       filename: fileName,
       contentType: new MediaType("image", "jpeg"),
-    )
+    ),
+    "folderName" : "images"
   });
-  var response = await dio.post("https://rkt-backend-production.vercel.app/api/db/upload/images",data: formData);
+  var response = await dio.post("https://rkt-backend-production.vercel.app/api/db/upload",data: formData);
   return response.data;
 }
 
