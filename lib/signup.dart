@@ -13,7 +13,15 @@ class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: Container(
+        decoration: const BoxDecoration(
+          image:  DecorationImage(
+            image: AssetImage("../../../lib/mainBackground2.jpeg"),
+            fit: BoxFit.cover,
+            opacity: 200
+            )
+        ),
+      child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             const SizedBox(height: 50),
@@ -32,6 +40,7 @@ class SignUpPage extends StatelessWidget {
           ],
         ),
       ),
+    )
     );
   }
 }
