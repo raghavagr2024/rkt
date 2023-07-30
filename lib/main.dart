@@ -10,6 +10,7 @@ import 'package:rkt/account_choice.dart';
 import 'package:rkt/login_user.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 final supabase = Supabase.instance.client;
 Future<void> main() async {
   await Supabase.initialize(
@@ -52,26 +53,47 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(
-              height: 200,
+              height: 100,
             ),
-            TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AccountChoice()));
-                },
-                child: const Text(
-                  "sign up",
-                  style: TextStyle(fontSize: 30),
-                )),
+            Image(
+              image: AssetImage('images/rkt-logo.png'),
+            ),
             const SizedBox(
-              height: 50,
+              height: 100,
             ),
-            TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginPage()));
-                },
-                child: const Text("Log in", style: TextStyle(fontSize: 30))),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AccountChoice()));
+                  },
+                  child: const Text(
+                    "Sign Up",
+                    style: TextStyle(fontSize: 50, color: Colors.white),
+                  )),
+            ),
+            const SizedBox(
+              height: 100,
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: TextButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
+                  },
+                  child: const Text("Log in",
+                      style: TextStyle(fontSize: 50, color: Colors.white))),
+            ),
           ],
         ),
       ),
