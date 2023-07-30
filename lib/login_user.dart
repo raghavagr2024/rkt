@@ -17,9 +17,17 @@ late TextEditingController _email, _password;
 class LoginPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    
     return Scaffold(
-      body: Column(
+      body: Container (
+        decoration: const BoxDecoration(
+          image:  DecorationImage(
+            image: AssetImage("../../../lib/mainBackground2.jpeg"),
+            fit: BoxFit.cover,
+            opacity: 200
+            )
+        ),
+      child: Column(
         children: <Widget>[
           const SizedBox(height: 50,),
           const Row(
@@ -51,6 +59,7 @@ class LoginPage extends StatelessWidget{
         ],
       ),
       
+    )
     );
   }
 
