@@ -1,63 +1,92 @@
 import 'package:flutter/material.dart';
-
 import 'package:rkt/signup.dart';
+import 'package:rkt/login_user.dart';
 
 class AccountChoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 50,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          ColorFiltered(
+            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.7), BlendMode.darken),
+          child: 
+            Image.asset(
+              "../../../lib/mainBackground2.jpeg", 
+              fit: BoxFit.cover,
             ),
-            const Row(
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                BackButton(),
-              ],
-            ),
-            const SizedBox(
-              height: 200,
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              child: TextButton(
+                const Text(
+                  "Please Choose an Account Type",
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 40),
+                ElevatedButton(
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SignUpPage(isTeacher: true)));
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUpPage(isTeacher: true)),
+                    );
                   },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    backgroundColor: Colors.blue,
+                  ),
                   child: const Text(
-                    "Sign Up as a teacher",
-                    style: TextStyle(fontSize: 50, color: Colors.white),
-                  )),
-            ),
-            const SizedBox(
-              height: 50,
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              child: TextButton(
+                    "Sign Up as a Teacher",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                SignUpPage(isTeacher: false)));
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUpPage(isTeacher: false)),
+                    );
                   },
-                  child: const Text("Sign Up as a parent",
-                      style: TextStyle(fontSize: 50, color: Colors.white))),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    backgroundColor: Colors.blue,
+                  ),
+                  child: const Text(
+                    "Sign Up as a Parent",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                ),
+                SizedBox(
+            height: 50,
+            child: TextButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                },
+                child: const Text(
+                  "Already have an account? Go to Login",
+                  style: TextStyle(fontSize: 20),
+                )),
+          ),
+              ],
+              
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
