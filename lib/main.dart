@@ -58,7 +58,7 @@ class MyHomePage extends StatelessWidget {
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
-        ),
+        ), 
         elevation: 8,
       ),
       body: Container(
@@ -74,16 +74,16 @@ class MyHomePage extends StatelessWidget {
             children: [
               const SizedBox(
                 height: 50,
-              ),
+              ),   
               Container(
                 margin: const EdgeInsets.only(bottom: 150),
-                child:
+                child: 
                 Text(
                   welcomeMessage,
                   style: const TextStyle(
                     fontSize: 50,
                     fontWeight: FontWeight.bold,
-
+                    
                   ),
                 ),
               ),
@@ -100,7 +100,7 @@ class MyHomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0), // Set border radius
                     ),
                     elevation: 3,
-
+                    
                   ),
                   child:
                   const Row(
@@ -118,7 +118,7 @@ class MyHomePage extends StatelessWidget {
               const SizedBox(
                 height: 50,
               ),
-
+            
               TextButton(
                   onPressed: () {
                     Navigator.push(context,
@@ -134,7 +134,7 @@ class MyHomePage extends StatelessWidget {
                     ),
                     elevation: 3,
                   ),
-                  child:
+                  child: 
                   const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -148,13 +148,16 @@ class MyHomePage extends StatelessWidget {
                     style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
                   )])),
 
-
-
+                  
+    
             ],
           ),
         ),
       ),
+      
     );
+
+    
   }
 }
 
