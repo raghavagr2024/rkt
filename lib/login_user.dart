@@ -3,7 +3,7 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:rkt/accountChoice.dart';
+import 'package:rkt/account_choice.dart';
 
 import 'package:rkt/content.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

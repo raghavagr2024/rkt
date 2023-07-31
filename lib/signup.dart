@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rkt/content.dart';
 import 'package:rkt/login_user.dart';
+import 'package:rkt/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Declare TextEditingController variables
@@ -124,8 +125,16 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
+        if(_password.text.length<6){
+          addSignUpDialog(context, "password must be greater than 6 digits");
+        }
+        else if(!_email.text.contains("@")||!_email.text.contains(".com")){
+          addSignUpDialog(context, "invalid email");
+        }
+        else{
+          await signUserUp(context);
+        }
 
-        await signup(context);
       },
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.fromLTRB(60, 0, 60, 0),
@@ -157,7 +166,15 @@ class LoginButton extends StatelessWidget {
               onPressed: () {
                 _email.clear();
                 _password.clear();
-                Navigator.of(context).pop();
+                if(message==""){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                }
+                else{
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ],
@@ -167,35 +184,22 @@ class LoginButton extends StatelessWidget {
   }
 
 
-  Future<void> signup(context) async {
+  Future<void> signUserUp(context) async {
+    String response;
+      if(isTeacher){
+        response = await signUp(_email.text, _password.text,"teacher" );
+      }
+      else{
+         response = await signUp(_email.text, _password.text,"parent" );
+      }
 
-    try{
-      final supabase = Supabase.instance.client;
-      await supabase.auth.signUp(
-        email: _email.text,
-        password: _password.text,
-      );
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()));
-      addSignUpDialog(context,"");
-    }
-    on AuthException catch(e){
-      addSignUpDialog(context,e.message);
-
-    }
-
-
-
-
-
-
-
-
+      if(response.contains("error")){
+        addSignUpDialog(context, "Some error has occured");
+      }
+      else{
+        addSignUpDialog(context, "");
+      }
   }
-
-
-
 }
 
 

@@ -269,6 +269,25 @@ int countOccurences(mainString, search) {
   return count;
 }
 
+Future<String> signUp(String email, String password, String type) async {
+  print("in sign user up");
+  var response = await http.post(
+    Uri.parse('https://rkt-backend-production.vercel.app/api/auth/signup/$type'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(
+        <String, String>{'email': email, 'pass': password}),
+  );
+  var ans = jsonDecode(response.body);
+  print(ans["message"]);
+  return ans["message"];
+}
+
+
+
+
+
 
 
 
