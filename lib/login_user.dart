@@ -42,7 +42,7 @@ class LoginPage extends StatelessWidget{
           const SizedBox(height:30),
           LoginButton(),
           const SizedBox(height: 30),
-          
+
           SizedBox(
             height: 50,
             child: TextButton(
@@ -58,7 +58,7 @@ class LoginPage extends StatelessWidget{
 
         ],
       ),
-      
+
     )
     );
   }
@@ -90,11 +90,11 @@ class _EmailTextField extends State<EmailTextField>{
               ),
             ),
           ),
-          
-          
+
+
         )
 
-       
+
     );
   }
 
@@ -151,7 +151,7 @@ class LoginButton extends StatelessWidget {
         child: const Text("Log in")
     );
 
-    
+
   }
   Future<void> addLoginDialog(BuildContext context, String message) async {
     return showDialog<void>(
@@ -207,6 +207,5 @@ class LoginButton extends StatelessWidget {
 
 
 }
-
 
 

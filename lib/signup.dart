@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rkt/content.dart';
+import 'package:rkt/login_user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Declare TextEditingController variables
@@ -123,6 +124,7 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
+
         await signup(context);
       },
       style: ElevatedButton.styleFrom(
@@ -140,7 +142,7 @@ class LoginButton extends StatelessWidget {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title:  const Text('AlertDialog Title'),
+          title:   message==""?const Text('Please check your email for a confirmation email'):const Text("error signing up"),
           content:  SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -175,12 +177,15 @@ class LoginButton extends StatelessWidget {
       );
       Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ContentPage(isTeacher: isTeacher,)));
+          MaterialPageRoute(builder: (context) => LoginPage()));
+      addSignUpDialog(context,"");
     }
     on AuthException catch(e){
       addSignUpDialog(context,e.message);
 
     }
+
+
 
 
 
