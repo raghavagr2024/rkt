@@ -31,28 +31,9 @@ router.post('/signup/:type', async (req, res) => {
             }
         );
 
-        const { user, error: signInError } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: pass,
-        })
-        /*
-        const payload = {
-            id: data.user.id,
-            email: data.user.email,
-            refresh_token: data.session.refresh_token,
-        }
-
-        const options = {
-            expiresIn: '1h',
-        }
-
-        const token = jwt.sign(payload, process.env.JWT_SECRET, options);
-        */
-
         if (error) throw new Error(error.message);
 
-        //return res.status(200).json({ user_data_token: token, access_token: data.session.access_token });
-        return res.status(200).send(user);
+        return res.status(200).json({ message: "Sign up successful." });
     } catch (error) {
         console.error("Auth error:", error.message);
         return res.status(500).json({ message: "Internal server error, check console." })
