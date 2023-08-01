@@ -11,6 +11,8 @@ import 'package:rkt/login_user.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+bool teacherSignup = false;
+
 final supabase = Supabase.instance.client;
 Future<void> main() async {
   await Supabase.initialize(

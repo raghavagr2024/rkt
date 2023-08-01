@@ -5,7 +5,7 @@ import 'package:rkt/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Declare TextEditingController variables
-late TextEditingController _email, _password;
+late TextEditingController _email, _password, _pin;
 
 class SignUpPage extends StatelessWidget {
   late bool isTeacher;
@@ -37,13 +37,16 @@ class SignUpPage extends StatelessWidget {
             const SizedBox(height: 20),
             PasswordTextField(),
             const SizedBox(height: 30),
+            if (teacherSignup) ...[
+              PinTextField(),
+            ],
+            const SizedBox(height: 30),
             LoginButton(isTeacher: isTeacher),
             const SizedBox(height: 30),
           ],
         ),
       ),
-    )
-    );
+    ));
   }
 }
 
@@ -74,7 +77,8 @@ class _EmailTextField extends State<EmailTextField> {
             borderSide: BorderSide(color: Colors.blue),
             borderRadius: BorderRadius.circular(8),
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         ),
       ),
     );
@@ -109,7 +113,8 @@ class _PasswordTextField extends State<PasswordTextField> {
             borderSide: BorderSide(color: Colors.blue),
             borderRadius: BorderRadius.circular(8),
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         ),
       ),
     );
@@ -125,7 +130,13 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
-        if(_password.text.length<6){
+        
+        if (teacherSignup && _pin.text == "54321") {
+          await signUserUp(context);
+        } else if (teacherSignup) {
+          wrongPin(context);
+          }
+          else if(_password.text.length<6){
           addSignUpDialog(context, "password must be greater than 6 digits");
         }
         else if(!_email.text.contains("@")||!_email.text.contains(".com")){
@@ -202,5 +213,67 @@ class LoginButton extends StatelessWidget {
   }
 }
 
+class PinTextField extends StatefulWidget {
+  @override
+  State<PinTextField> createState() => _PinTextField();
+}
 
+class _PinTextField extends State<PinTextField> {
+  @override
+  void initState() {
+    super.initState();
+    _pin = TextEditingController();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: TextFormField(
+        controller: _pin,
+        obscureText: true,
+        decoration: InputDecoration(
+          labelText: 'Pin',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> wrongPin(
+  BuildContext context,
+) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Alert'),
+        content: const SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('This is the incorrect pin'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Ok'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}

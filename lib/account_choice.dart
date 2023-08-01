@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rkt/main.dart';
 import 'package:rkt/signup.dart';
 import 'package:rkt/login_user.dart';
 
@@ -10,10 +11,10 @@ class AccountChoice extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           ColorFiltered(
-            colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.7), BlendMode.darken),
-          child: 
-            Image.asset(
-              "../../../lib/mainBackground2.jpeg", 
+            colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.7), BlendMode.darken),
+            child: Image.asset(
+              "../../../lib/mainBackground2.jpeg",
               fit: BoxFit.cover,
             ),
           ),
@@ -33,9 +34,11 @@ class AccountChoice extends StatelessWidget {
                 SizedBox(height: 40),
                 ElevatedButton(
                   onPressed: () {
+                    teacherSignup = true;
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SignUpPage(isTeacher: true)),
+                      MaterialPageRoute(
+                          builder: (context) => SignUpPage(isTeacher: true)),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -53,9 +56,11 @@ class AccountChoice extends StatelessWidget {
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
+                    teacherSignup = false;
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SignUpPage(isTeacher: false)),
+                      MaterialPageRoute(
+                          builder: (context) => SignUpPage(isTeacher: false)),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -71,19 +76,20 @@ class AccountChoice extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-            height: 50,
-            child: TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginPage()));
-                },
-                child: const Text(
-                  "Already have an account? Go to Login",
-                  style: TextStyle(fontSize: 20),
-                )),
-          ),
+                  height: 50,
+                  child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()));
+                      },
+                      child: const Text(
+                        "Already have an account? Go to Login",
+                        style: TextStyle(fontSize: 20),
+                      )),
+                ),
               ],
-              
             ),
           ),
         ],
