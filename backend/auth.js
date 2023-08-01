@@ -14,8 +14,15 @@ const supabase = createClient(url, anonKey);
 
 router.post('/signup/:type', async (req, res) => {
     try {
-        const { userType } = req.params.type ? 'teacher' : 'parent';
+        const { type } = req.params;
+        const userType = type || 'parent';
+
+        if (!type) 
+            type = 'parent';
+
         const { email, pass } = req.body;
+
+        console.log(type);
 
         if (!email || !pass) return res.status(401).json({ message: 'Email or password not provided.' });
 
@@ -28,8 +35,7 @@ router.post('/signup/:type', async (req, res) => {
                         type: userType
                     }
                 }
-            }
-        );
+            });
 
         if (error) throw new Error(error.message);
 
@@ -55,7 +61,7 @@ router.post('/signin', async (req, res) => {
         const { id, email: userEmail } = data.user;
         const { access_token, refresh_token } = data.session;
         */
-
+        
         const payload = {
             id: data.user.id,
             email: data.user.email,
@@ -85,6 +91,21 @@ router.post('/signout', async (req, res) => {
     } catch (error) {
         console.error("Logout error: ", error.message);
         return res.status(500).json({ message: "Internal server error, check console." });
+    }
+});
+
+router.get('/userData/:token', async (req, res) => {
+    try {
+        const { token } = req.params;
+
+        const { data: { user } } = await supabase.auth.getUser(token)
+
+        //if (error) throw new Error(error.message);
+
+        return res.status(200).send(user);
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: "Internal server error, check console."});
     }
 });
 
