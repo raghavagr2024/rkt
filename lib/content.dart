@@ -64,20 +64,22 @@ class _ContentPage extends State<ContentPage> {
 
             return Scaffold(
               floatingActionButton: _getButton(),
-              body: Column(
+              body: SingleChildScrollView(
+                child: Column(
                 children: [
                   const Text("Modules", style: TextStyle(fontSize: 40)),
                   const SizedBox(
                     height: 40,
                   ),
                   ModuleList(isTeacher: isTeacher),
-                  Html(data: snapshot.data),
+                  
                   ElevatedButton(
                     onPressed: _logOut,
                     child: const Text('Log Out'),
                   ),
                 ],
               ),
+            ),
             );
           } else {
             return const CircularProgressIndicator();
