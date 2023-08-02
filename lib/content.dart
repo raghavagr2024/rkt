@@ -3,6 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:http/http.dart' as http;
+import 'package:rkt/login_user.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 import 'main.dart';
 import 'package:rkt/module_page.dart';
@@ -23,6 +26,26 @@ class _ContentPage extends State<ContentPage> {
   late bool isTeacher;
 
   _ContentPage({required this.isTeacher});
+  void _logOut() {
+    _logoutFromSupabase();
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+  }
+
+  void _logoutFromSupabase() async {
+    final response = await http.post(
+      Uri.parse('https://rkt-backend-production.vercel.app/api/auth/signout'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$access_token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print('Logged out successfully.');
+    } else {
+      print('Logout failed. Status code: ${response.statusCode}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +61,21 @@ class _ContentPage extends State<ContentPage> {
 
             return Scaffold(
               floatingActionButton: _getButton(),
-              body: Column(
+              body: SingleChildScrollView(
+                 child: Column(
                 children: [
                   const SizedBox(
                     height: 40,
                   ),
                   ModuleList(isTeacher: isTeacher),
-
+                  Html(data: snapshot.data),
+                  ElevatedButton(
+                    onPressed: _logOut,
+                    child: const Text('Log Out'),
+                  ),
                 ],
               ),
+              )
 
 
             );
@@ -140,34 +169,20 @@ class _Module extends State<Module> {
   @override
   Widget build(context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          "Module " + _data[index]['id'].toString(),
-          style: TextStyle(color: Colors.black, fontSize: 30.0),
-        ),
-        SizedBox(
-            height: 30,
-            child: TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ModulePageParent(id: _data[index]['id'])));
-                },
-                child: Text(
-                  _data[index]['Title'],
-                  style: const TextStyle(
-                    fontSize: 30,
-                  ),
-                  textAlign: TextAlign.right,
-                ))),
-        if (isTeacher) ...[
-          IconButton(
-              onPressed: () {
-                _confirmDialog();
-              },
+        TextButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ModulePageParent(id:_data[index]['id']))
+                  );
+            },
+            child: Text(_data[index]['Title'], style: const TextStyle(fontSize: 30),)),
+
+        if(isTeacher)...[
+          IconButton(onPressed: (){
+              _confirmDialog();
+          },
               icon: const Icon(Icons.remove_circle)),
           IconButton(onPressed: (){
             SchedulerBinding.instance.addPostFrameCallback((_) {
