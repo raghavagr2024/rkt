@@ -220,7 +220,7 @@ Future<dynamic> getContent() async {
 
 }
 Future<String> getContentByID(var id) async {
-  log("in get db");
+  log("in get db by id");
   var ans =  await http.get(Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/$id'));
   print(ans.body);
   if(ans.body=="[]"){
@@ -228,9 +228,13 @@ Future<String> getContentByID(var id) async {
     return "[]";
   }
   String temp = jsonDecode(ans.body)[0]["Body"];
-  int max = (countOccurences(temp, "img"));
+  int max = temp.contains("img") ?(countOccurences(temp, "img")): 0;
   int count = 0;
   while(count<max){
+    print("max");
+    print("count");
+    print(max);
+
     RegExp exp = RegExp(r'image-(.*?)"');
     RegExpMatch? match = exp.firstMatch(temp);
     String s = match![0].toString();
@@ -240,6 +244,7 @@ Future<String> getContentByID(var id) async {
     temp = temp.replaceAll(s, await getFileURL(s));
     count++;
   }
+  print("temp");
   print(temp);
   return temp;
 
