@@ -21,7 +21,7 @@ Future<void> main() async {
 
   runApp(MyApp());
 }
-
+var user_data_token,access_token,teacherAccount;
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -283,6 +283,31 @@ Future<String> signUp(String email, String password, String type) async {
   print(ans["message"]);
   return ans["message"];
 }
+
+Future<bool> login(String email, String password) async {
+  print("in log in user");
+  var response = await http.post(
+    Uri.parse('https://rkt-backend-production.vercel.app/api/auth/signin/'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(
+        <String, String>{'email': email, 'pass': password}),
+  );
+  var ans = jsonDecode(response.body);
+  if(ans.length == 3){
+    access_token = ans["access_token"];
+    teacherAccount = ans["teacherAccount"];
+    user_data_token = ans["user_data_token"];
+
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+
 
 
 

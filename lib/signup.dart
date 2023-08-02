@@ -197,7 +197,10 @@ class LoginButton extends StatelessWidget {
         addSignUpDialog(context, "Some error has occured");
       }
       else{
-        addSignUpDialog(context, "");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
       }
   }
 }

@@ -137,7 +137,7 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
         onPressed: () async {
-          await login(context);
+          await loginUser(context);
 
 
 
@@ -184,21 +184,15 @@ class LoginButton extends StatelessWidget {
   }
 
 
-  Future<void> login(context) async {
+  Future<void> loginUser(context) async {
 
-    try{
-
-      await supabase.auth.signInWithPassword(
-        email: _email.text,
-        password: _password.text,
-      );
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ContentPage(isTeacher: true,)));
+    bool response = await login(_email.text, _password.text);
+    if(response){
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ContentPage(isTeacher: teacherAccount)));
     }
-    on AuthException catch(e){
-      addLoginDialog(context,e.message);
-
+    else{
+      addLoginDialog(context, "Error logging in");
     }
 
 
