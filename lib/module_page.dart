@@ -5,6 +5,8 @@ import 'package:rkt/main.dart';
 
 import 'content.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:rkt/login_user.dart';
+import 'package:http/http.dart' as http;
 
 class ModulePageParent extends StatefulWidget{
   late final id;
@@ -26,6 +28,27 @@ class _ModulePageParent extends State<ModulePageParent> {
     required this.id,
   });
 
+    void _logOut() {
+    _logoutFromSupabase();
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+  }
+ 
+  void _logoutFromSupabase() async {
+    final response = await http.post(
+      Uri.parse('https://rkt-backend-production.vercel.app/api/auth/signout'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$access_token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print('Logged out successfully.');
+    } else {
+      print('Logout failed. Status code: ${response.statusCode}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -44,7 +67,11 @@ class _ModulePageParent extends State<ModulePageParent> {
                     child: Column(
                       children: [
                         Html(data: _data),
-                      ],
+                        ElevatedButton(
+                          onPressed: _logOut,
+                          child: const Text('Log Out'),
+                        ),
+                      ],     
                     ),
                   )
               ),
