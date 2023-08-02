@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:http/http.dart' as http;
+import 'package:rkt/login_user.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 import 'main.dart';
 import 'package:rkt/module_page.dart';
@@ -26,6 +29,26 @@ class _ContentPage extends State<ContentPage> {
   late bool isTeacher;
 
   _ContentPage({required this.isTeacher});
+  void _logOut() {
+    _logoutFromSupabase();
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+  }
+
+  void _logoutFromSupabase() async {
+    final response = await http.post(
+      Uri.parse('https://rkt-backend-production.vercel.app/api/auth/signout'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$access_token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print('Logged out successfully.');
+    } else {
+      print('Logout failed. Status code: ${response.statusCode}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +71,11 @@ class _ContentPage extends State<ContentPage> {
                     height: 40,
                   ),
                   ModuleList(isTeacher: isTeacher),
+                  Html(data: snapshot.data),
+                  ElevatedButton(
+                    onPressed: _logOut,
+                    child: const Text('Log Out'),
+                  ),
                 ],
               ),
             );
