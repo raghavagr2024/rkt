@@ -45,6 +45,7 @@ router.post('/signup/:type', async (req, res) => {
         return res.status(500).json({ message: "Internal server error, check console." })
     }
 });
+});
 
 router.post('/signin', async (req, res) => {
     try {
@@ -57,16 +58,20 @@ router.post('/signin', async (req, res) => {
 
         if (error) throw new Error(error.message);
 
-        /*
-        const { id, email: userEmail } = data.user;
-        const { access_token, refresh_token } = data.session;
-        */
-        
         const payload = {
             id: data.user.id,
             email: data.user.email,
             refresh_token: data.session.refresh_token,
         }
+
+        const userType = data.user.user_metadata.type;
+
+        let isTeacher = null;
+
+        if (userType === 'teacher') 
+            isTeacher = true;
+        else 
+            isTeacher = false;
 
         const options = {
             expiresIn: '1h',
@@ -74,7 +79,7 @@ router.post('/signin', async (req, res) => {
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, options);
 
-        return res.status(200).json({ user_data_token: token, access_token: data.session.access_token });
+        return res.status(200).json({ user_data_token: token, access_token: data.session.access_token, teacherAccount: isTeacher });
     } catch (error) {
         console.error("Login error: ", error.message);
         return res.status(500).json({ message: "Internal server error, check console." });
