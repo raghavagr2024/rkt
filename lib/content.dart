@@ -140,20 +140,34 @@ class _Module extends State<Module> {
   @override
   Widget build(context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        TextButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ModulePageParent(id:_data[index]['id']))
-                  );
-            },
-            child: Text(_data[index]['Title'], style: const TextStyle(fontSize: 30),)),
-
-        if(isTeacher)...[
-          IconButton(onPressed: (){
-              _confirmDialog();
-          },
+        Text(
+          "Module " + _data[index]['id'].toString(),
+          style: TextStyle(color: Colors.black, fontSize: 30.0),
+        ),
+        SizedBox(
+            height: 30,
+            child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ModulePageParent(id: _data[index]['id'])));
+                },
+                child: Text(
+                  _data[index]['Title'],
+                  style: const TextStyle(
+                    fontSize: 30,
+                  ),
+                  textAlign: TextAlign.right,
+                ))),
+        if (isTeacher) ...[
+          IconButton(
+              onPressed: () {
+                _confirmDialog();
+              },
               icon: const Icon(Icons.remove_circle)),
           IconButton(onPressed: (){
             SchedulerBinding.instance.addPostFrameCallback((_) {

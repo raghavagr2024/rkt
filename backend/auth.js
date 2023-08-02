@@ -14,8 +14,15 @@ const supabase = createClient(url, anonKey);
 
 router.post('/signup/:type', async (req, res) => {
     try {
-        const { userType } = req.params.type ? 'teacher' : 'parent';
+        const { type } = req.params;
+        const userType = type || 'parent';
+
+        if (!type) 
+            type = 'parent';
+
         const { email, pass } = req.body;
+
+        console.log(type);
 
         if (!email || !pass) return res.status(401).json({ message: 'Email or password not provided.' });
 
@@ -28,8 +35,7 @@ router.post('/signup/:type', async (req, res) => {
                         type: userType
                     }
                 }
-            }
-        );
+            });
 
         if (error) throw new Error(error.message);
 
@@ -38,6 +44,7 @@ router.post('/signup/:type', async (req, res) => {
         console.error("Auth error:", error.message);
         return res.status(500).json({ message: "Internal server error, check console." })
     }
+});
 });
 
 router.post('/signin', async (req, res) => {
@@ -51,16 +58,20 @@ router.post('/signin', async (req, res) => {
 
         if (error) throw new Error(error.message);
 
-        /*
-        const { id, email: userEmail } = data.user;
-        const { access_token, refresh_token } = data.session;
-        */
-
         const payload = {
             id: data.user.id,
             email: data.user.email,
             refresh_token: data.session.refresh_token,
         }
+
+        const userType = data.user.user_metadata.type;
+
+        let isTeacher = null;
+
+        if (userType === 'teacher') 
+            isTeacher = true;
+        else 
+            isTeacher = false;
 
         const options = {
             expiresIn: '1h',
@@ -68,7 +79,7 @@ router.post('/signin', async (req, res) => {
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, options);
 
-        return res.status(200).json({ user_data_token: token, access_token: data.session.access_token });
+        return res.status(200).json({ user_data_token: token, access_token: data.session.access_token, teacherAccount: isTeacher });
     } catch (error) {
         console.error("Login error: ", error.message);
         return res.status(500).json({ message: "Internal server error, check console." });
@@ -85,6 +96,21 @@ router.post('/signout', async (req, res) => {
     } catch (error) {
         console.error("Logout error: ", error.message);
         return res.status(500).json({ message: "Internal server error, check console." });
+    }
+});
+
+router.get('/userData/:token', async (req, res) => {
+    try {
+        const { token } = req.params;
+
+        const { data: { user } } = await supabase.auth.getUser(token)
+
+        //if (error) throw new Error(error.message);
+
+        return res.status(200).send(user);
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ message: "Internal server error, check console."});
     }
 });
 

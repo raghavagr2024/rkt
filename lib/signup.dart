@@ -5,7 +5,7 @@ import 'package:rkt/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Declare TextEditingController variables
-late TextEditingController _email, _password;
+late TextEditingController _email, _password, _pin;
 
 class SignUpPage extends StatelessWidget {
   late bool isTeacher;
@@ -15,14 +15,12 @@ class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image:  DecorationImage(
-            image: AssetImage("../../../lib/mainBackground2.jpeg"),
-            fit: BoxFit.cover,
-            opacity: 200
-            )
-        ),
+        body: Container(
+      decoration: const BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage("../../../lib/mainBackground2.jpeg"),
+              fit: BoxFit.cover,
+              opacity: 200)),
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -205,5 +203,67 @@ class LoginButton extends StatelessWidget {
   }
 }
 
+class PinTextField extends StatefulWidget {
+  @override
+  State<PinTextField> createState() => _PinTextField();
+}
 
+class _PinTextField extends State<PinTextField> {
+  @override
+  void initState() {
+    super.initState();
+    _pin = TextEditingController();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: TextFormField(
+        controller: _pin,
+        obscureText: true,
+        decoration: InputDecoration(
+          labelText: 'Pin',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> wrongPin(
+  BuildContext context,
+) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Alert'),
+        content: const SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('This is the incorrect pin'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Ok'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
