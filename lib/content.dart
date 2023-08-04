@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:http/http.dart' as http;
@@ -10,6 +9,9 @@ import 'package:flutter_html/flutter_html.dart';
 import 'main.dart';
 import 'package:rkt/module_page.dart';
 import 'package:rkt/teacherNewPage.dart';
+
+bool semester1 = false;
+bool semester2 = false;
 
 class ContentPage extends StatefulWidget {
   late bool isTeacher;
@@ -31,7 +33,8 @@ class _ContentPage extends State<ContentPage> {
   _ContentPage({required this.isTeacher});
   void _logOut() {
     _logoutFromSupabase();
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 
   void _logoutFromSupabase() async {
@@ -66,20 +69,49 @@ class _ContentPage extends State<ContentPage> {
               floatingActionButton: _getButton(),
               body: SingleChildScrollView(
                 child: Column(
-                children: [
-                  const Text("Modules", style: TextStyle(fontSize: 40)),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  ModuleList(isTeacher: isTeacher),
-                  
-                  ElevatedButton(
-                    onPressed: _logOut,
-                    child: const Text('Log Out'),
-                  ),
-                ],
+                  children: [
+                    const Text("Modules", style: TextStyle(fontSize: 40)),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    Row(children: [
+                      SizedBox(
+                        width: (2 / 5) * MediaQuery.of(context).size.width,
+                      ),
+                      Text("Semester 1: "),
+                      Checkbox(
+                        activeColor: Colors.blue,
+                        checkColor: Colors.white,
+                        value: semester1,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            semester1 = value!;
+                          });
+                        },
+                      ),
+                      SizedBox(
+                        width: (1 / 20) * MediaQuery.of(context).size.width,
+                      ),
+                      Text("Semester 2: "),
+                      Checkbox(
+                        activeColor: Colors.blue,
+                        checkColor: Colors.white,
+                        value: semester2,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            semester2 = value!;
+                          });
+                        },
+                      ),
+                    ]),
+                    ModuleList(isTeacher: isTeacher),
+                    ElevatedButton(
+                      onPressed: _logOut,
+                      child: const Text('Log Out'),
+                    ),
+                  ],
+                ),
               ),
-            ),
             );
           } else {
             return const CircularProgressIndicator();
@@ -274,6 +306,39 @@ class _Module extends State<Module> {
               ),
             ],
           );
+        });
+      },
+    );
+  }
+}
+
+class ParameterCheckbox extends StatefulWidget {
+  final bool initialValue;
+  final Function(bool value) onChanged;
+
+  ParameterCheckbox({required this.initialValue, required this.onChanged});
+
+  @override
+  _ParameterCheckboxState createState() => _ParameterCheckboxState();
+}
+
+class _ParameterCheckboxState extends State<ParameterCheckbox> {
+  late bool _isChecked;
+
+  @override
+  void initState() {
+    super.initState();
+    _isChecked = widget.initialValue;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Checkbox(
+      value: _isChecked,
+      onChanged: (newValue) {
+        setState(() {
+          _isChecked = newValue ?? false;
+          widget.onChanged(_isChecked);
         });
       },
     );
