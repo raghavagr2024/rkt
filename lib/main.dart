@@ -24,6 +24,8 @@ Future<void> main() async {
   runApp(MyApp());
 }
 var user_data_token,access_token,teacherAccount;
+var categories;
+int maxAge = 0, minAge = 100;
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -216,9 +218,42 @@ Future<dynamic> getContent() async {
   log("in get db");
   var ans =  await http.get(Uri.parse('https://rkt-backend-production.vercel.app/api/db/content'));
 
+  createCategoryUnion(ans.body);
   return ans.body;
 
 }
+
+void createCategoryUnion(var data) {
+  print("data");
+  print(data);
+  data = jsonDecode(data);
+  List ans = [];
+  for(int i = 0; i<data.length;i++){
+    var row = data[i];
+    print(row);
+    print("row");
+    if(row["age"]>maxAge){
+      maxAge = row["age"];
+    }
+    if(row["age"]<minAge){
+      minAge = row["age"];
+    }
+    if(row["categories"]==null){
+      continue;
+    }
+    else{
+      List categories = row['categories'];
+      ans.addAll(categories);
+    }
+
+  }
+  categories = ans.toSet();
+  print(categories);
+  print(maxAge);
+  print(minAge);
+}
+
+
 Future<String> getContentByID(var id) async {
   log("in get db by id");
   var ans =  await http.get(Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/$id'));
