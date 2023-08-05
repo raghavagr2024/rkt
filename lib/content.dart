@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:rkt/teacherNewPage.dart';
 
 bool semester1 = false;
 bool semester2 = false;
+List<bool> checks = List.filled(categories.length, false);
 
 class ContentPage extends StatefulWidget {
   late bool isTeacher;
@@ -74,36 +76,10 @@ class _ContentPage extends State<ContentPage> {
                     const SizedBox(
                       height: 40,
                     ),
-                    Row(children: [
-                      SizedBox(
-                        width: (2 / 5) * MediaQuery.of(context).size.width,
-                      ),
-                      Text("Semester 1: "),
-                      Checkbox(
-                        activeColor: Colors.blue,
-                        checkColor: Colors.white,
-                        value: semester1,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            semester1 = value!;
-                          });
-                        },
-                      ),
-                      SizedBox(
-                        width: (1 / 20) * MediaQuery.of(context).size.width,
-                      ),
-                      Text("Semester 2: "),
-                      Checkbox(
-                        activeColor: Colors.blue,
-                        checkColor: Colors.white,
-                        value: semester2,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            semester2 = value!;
-                          });
-                        },
-                      ),
-                    ]),
+                    SizedBox(
+                      height: 200,
+                      child: CheckboxListWidget(checkboxItems: categories),
+                    ),
                     ModuleList(isTeacher: isTeacher),
                     ElevatedButton(
                       onPressed: _logOut,
@@ -312,34 +288,39 @@ class _Module extends State<Module> {
   }
 }
 
-class ParameterCheckbox extends StatefulWidget {
-  final bool initialValue;
-  final Function(bool value) onChanged;
+class CheckboxListWidget extends StatefulWidget {
+  final HashSet<dynamic> checkboxItems;
 
-  ParameterCheckbox({required this.initialValue, required this.onChanged});
+  CheckboxListWidget({required this.checkboxItems});
 
   @override
-  _ParameterCheckboxState createState() => _ParameterCheckboxState();
+  _CheckboxListWidgetState createState() => _CheckboxListWidgetState();
 }
 
-class _ParameterCheckboxState extends State<ParameterCheckbox> {
-  late bool _isChecked;
+class _CheckboxListWidgetState extends State<CheckboxListWidget> {
+  late List<dynamic> _checkboxList;
 
   @override
   void initState() {
     super.initState();
-    _isChecked = widget.initialValue;
+    _checkboxList = widget.checkboxItems.toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Checkbox(
-      value: _isChecked,
-      onChanged: (newValue) {
-        setState(() {
-          _isChecked = newValue ?? false;
-          widget.onChanged(_isChecked);
-        });
+    return ListView.builder(
+      itemCount: _checkboxList.length,
+      itemBuilder: (context, index) {
+        dynamic item = _checkboxList[index];
+        return CheckboxListTile(
+          title: Text(item.toString()),
+          value: checks[index],
+          onChanged: (newValue) {
+            setState(() {
+              checks[index] = !checks[index];
+            });
+          },
+        );
       },
     );
   }
