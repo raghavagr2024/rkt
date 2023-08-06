@@ -11,6 +11,7 @@ import 'main.dart';
 import 'package:rkt/module_page.dart';
 import 'package:rkt/teacherNewPage.dart';
 
+double _currentSliderValue = 5;
 bool semester1 = false;
 bool semester2 = false;
 List<bool> checks = List.filled(categories.length, false);
@@ -76,8 +77,29 @@ class _ContentPage extends State<ContentPage> {
                     const SizedBox(
                       height: 40,
                     ),
+                    Text(
+                      'Age',
+                      style: TextStyle(
+                        fontSize: 30,
+                      ),
+                    ),
                     SizedBox(
-                      height: 200,
+                      width: 550,
+                      child: Slider(
+                        value: _currentSliderValue,
+                        min: 5,
+                        max: 13,
+                        divisions: 8,
+                        label: _currentSliderValue.round().toString(),
+                        onChanged: (double value) {
+                          setState(() {
+                            _currentSliderValue = value;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 100,
                       child: CheckboxListWidget(checkboxItems: categories),
                     ),
                     ModuleList(isTeacher: isTeacher),
