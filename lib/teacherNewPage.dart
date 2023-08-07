@@ -42,8 +42,17 @@ class _TeacherNewPage extends State<TeacherNewPage> {
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             initJson = snapshot.data;
-            currentCategories = initJson["categories"];
-            ageController.text = initJson["age"].toString();
+            print(initJson);
+            if(!initJson.isEmpty){
+              currentCategories = initJson[1];
+              ageController.text = initJson[2].toString();
+              initJson = initJson[0];
+            }
+            else{
+              initJson = "[]";
+            }
+
+
             print(currentCategories);
 
             return HtmlEditorExample(title: "title");
@@ -192,38 +201,37 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                         if (_formKey.currentState!.validate()) {
                           print("in validate");
                         }
-                        //   String text = await controller.getText();
-                        //   String total = "";
-                        //   for(int i = 0; i<files.length;i++){
-                        //     String temp = text.substring(0, text.indexOf('">')+2);
-                        //     String ans = replaceTag(temp,i);
-                        //     total += ans;
-                        //     text = text.substring(text.indexOf('">')+2);
-                        //     print(text);
-                        //   }
-                        //   total += text;
-                        //
-                        //   print(total);
-                        //   print("total");
-                        //   if(_id==-1){
-                        //     await addContent(getTitleRaw(total),total);
-                        //   }
-                        //   else{
-                        //     await editContent(_id, getTitleRaw(total),total);
-                        //   }
-                        //   print("after add content");
-                        //   for(int i = 0; i<files.length;i++){
-                        //     print(files[i].name);
-                        //     await addFile(files[i].bytes, files[i].name);
-                        //   }
-                        //   print("done");
-                        //   SchedulerBinding.instance.addPostFrameCallback((_) {
-                        //     Navigator.push(
-                        //         context,
-                        //         MaterialPageRoute(builder: (context) => ContentPage(isTeacher: true)));
-                        //   });
-                        // }
-                      },
+                          String text = await controller.getText();
+                          String total = "";
+                          for(int i = 0; i<files.length;i++){
+                            String temp = text.substring(0, text.indexOf('">')+2);
+                            String ans = replaceTag(temp,i);
+                            total += ans;
+                            text = text.substring(text.indexOf('">')+2);
+                            print(text);
+                          }
+                          total += text;
+
+                          print(total);
+                          print("total");
+                          if(_id==-1){
+                            await addContent(getTitleRaw(total),total,currentCategories,int.tryParse(ageController.text));
+                          }
+                          else{
+                            await editContent(_id, getTitleRaw(total),total,currentCategories,int.tryParse(ageController.text));
+                          }
+                          print("after add content");
+                          for(int i = 0; i<files.length;i++){
+                            print(files[i].name);
+                            await addFile(files[i].bytes, files[i].name);
+                          }
+                          print("done");
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ContentPage(isTeacher: true)));
+                          });
+                        },
                       child: const Text("Submit",
                           style: TextStyle(color: Colors.white)),
                     ),

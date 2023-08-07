@@ -165,15 +165,16 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-Future<http.Response> addContent(var title, var body, List filters, int age) {
+Future<http.Response> addContent(var title, var body, List filters, var age) {
   log("in addContent");
+  print(filters);
   return http.post(
     Uri.parse('https://rkt-backend-production.vercel.app/api/db/content'),
     headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
+      'Content-Type': 'application/json',
+      'Authorization': '$access_token',
     },
-    body: jsonEncode(
-        <String, String>{'title': title, 'body': body}),
+    body: jsonEncode({'title': title, 'body': body, "catArr": filters, "age": age}),
   );
 }
 
@@ -192,14 +193,14 @@ Future<dynamic> addFile(List<int> file, String fileName) async {
   return response.data;
 }
 
-Future<http.Response> editContent(var id, var title, var body) {
+Future<http.Response> editContent(var id, var title, var body, var filters, var age) {
   log("in edit Content");
   return http.put(
     Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: jsonEncode({'title': title, 'body': body}),
+    body: jsonEncode({'title': title, 'body': body,"catArr": json.encode(filters), "age": age.toString()}),
   );
 }
 
@@ -256,13 +257,13 @@ void createCategoryUnion(var data) {
 }
 
 
-Future<String> getContentByID(var id) async {
+Future<List> getContentByID(var id) async {
   log("in get db by id");
   var ans =  await http.get(Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/$id'));
   print(ans.body);
   if(ans.body=="[]"){
     print("in null");
-    return "[]";
+    return [];
   }
   String temp = jsonDecode(ans.body)[0]["Body"];
   int max = temp.contains("img") ?(countOccurences(temp, "img")): 0;
@@ -282,8 +283,9 @@ Future<String> getContentByID(var id) async {
     count++;
   }
   print("temp");
+  List answers = [temp,jsonDecode(ans.body)[0]["categories"],jsonDecode(ans.body)[0]["age"]];
   print(temp);
-  return temp;
+  return answers;
 
 
 

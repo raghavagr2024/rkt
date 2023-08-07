@@ -34,7 +34,7 @@ class _ModulePageParent extends State<ModulePageParent> {
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
 
-            _data = snapshot.data;
+            _data = snapshot.data[0];
             print(_data.runtimeType);
             print(_data);
             return WillPopScope(
