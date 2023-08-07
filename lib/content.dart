@@ -118,21 +118,51 @@ class _ContentPage extends State<ContentPage> {
   }
 
   //Method for the API call
+  String categoriesJson = json.encode(List.from(categories));
 
   Widget _getButton() {
-    if (isTeacher) {
-      return FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            SchedulerBinding.instance.addPostFrameCallback((_) {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => TeacherNewPage()));
-            });
+  if (isTeacher) {
+    return FloatingActionButton(
+      child: const Icon(Icons.add),
+      onPressed: () {
+        SchedulerBinding.instance.addPostFrameCallback((_) {      
+          Map<String, dynamic> requestData = {        
+            "title": "title text",
+            "body": "body text",
+            "catArr": categoriesJson,//categoriesJson,
+            "age": "9"
+          
+          };
+          String requestDataJson = json.encode(requestData);
+
+          // Make the POST request
+          http.post(
+            Uri.parse('https://rkt-backend-production.vercel.app/api/db/content'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': '$access_token',
+            },
+            body: requestDataJson,
+          ).then((response) {
+            if (response.statusCode == 200) {
+              // Success handling
+            } else {
+              // Error handling
+            }
           });
-    } else {
-      return Container();
-    }
+
+          // Navigate to the new page
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => TeacherNewPage()),
+          );
+        });
+      },
+    );
+  } else {
+    return Container();
   }
+}
 
   //Method for the Supabase call
   /*
