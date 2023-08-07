@@ -165,7 +165,7 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-Future<http.Response> addContent(var title, var body) {
+Future<http.Response> addContent(var title, var body, List filters, int age) {
   log("in addContent");
   return http.post(
     Uri.parse('https://rkt-backend-production.vercel.app/api/db/content'),
@@ -248,9 +248,11 @@ void createCategoryUnion(var data) {
 
   }
   categories = ans.toSet();
+  //categories = categories.toList();
   print(categories);
   print(maxAge);
   print(minAge);
+  print("==================================");
 }
 
 

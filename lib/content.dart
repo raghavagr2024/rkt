@@ -67,7 +67,7 @@ class _ContentPage extends State<ContentPage> {
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             _data = jsonDecode(snapshot.data);
-
+            print(_data);
             return Scaffold(
               floatingActionButton: _getButton(),
               body: SingleChildScrollView(
@@ -134,12 +134,7 @@ class _ContentPage extends State<ContentPage> {
     }
   }
 
-  //Method for the Supabase call
-  /*
-  Future<dynamic> getDB() async {
-    return await supabase.from('content').select();
-  }
-  */
+
 }
 
 class ModuleList extends StatefulWidget {
@@ -204,24 +199,24 @@ class _Module extends State<Module> {
         SizedBox(
           width: (2 / 5) * MediaQuery.of(context).size.width,
         ),
-        SizedBox(
+        const SizedBox(
             height: 50,
             width: 10,
-            child: const DecoratedBox(
-              decoration: const BoxDecoration(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
                 color: Colors.blue,
               ),
             )),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 50,
               width: 20,
             ),
             Text(
-              _data[index]['inserted_at'].toString().substring(0, 10) + ": ",
-              style: TextStyle(
+              "${_data[index]['inserted_at'].toString().substring(0, 10)}: ",
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 30.0,
               ),
