@@ -87,9 +87,9 @@ class _ContentPage extends State<ContentPage> {
                       width: 550,
                       child: Slider(
                         value: _currentSliderValue,
-                        min: 5,
-                        max: 13,
-                        divisions: 8,
+                        min: minAge.toDouble(),
+                        max: maxAge.toDouble(),
+                        divisions: maxAge - minAge,
                         label: _currentSliderValue.round().toString(),
                         onChanged: (double value) {
                           setState(() {
@@ -102,7 +102,10 @@ class _ContentPage extends State<ContentPage> {
                       height: 100,
                       child: CheckboxListWidget(checkboxItems: categories),
                     ),
-                    ModuleList(isTeacher: isTeacher),
+                    ModuleList(
+                      isTeacher: isTeacher,
+                      filter: false,
+                    ),
                     ElevatedButton(
                       onPressed: _logOut,
                       child: const Text('Log Out'),
@@ -144,16 +147,18 @@ class _ContentPage extends State<ContentPage> {
 
 class ModuleList extends StatefulWidget {
   late final isTeacher;
-  ModuleList({required this.isTeacher});
+  late final filter;
+  ModuleList({required this.isTeacher, required this.filter});
   @override
   State<StatefulWidget> createState() {
-    return _ModuleList(isTeacher: isTeacher);
+    return _ModuleList(isTeacher: isTeacher, filter: filter);
   }
 }
 
 class _ModuleList extends State<ModuleList> {
   late final isTeacher;
-  _ModuleList({required this.isTeacher});
+  late final filter;
+  _ModuleList({required this.isTeacher, required this.filter});
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
