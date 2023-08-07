@@ -198,10 +198,9 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                           backgroundColor:
                               Theme.of(context).colorScheme.secondary),
                       onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          print("in validate");
-                        }
-                          String text = await controller.getText();
+                        String text = await controller.getText();
+                        if (_formKey.currentState!.validate() && currentCategories.isNotEmpty && text.isNotEmpty) {
+
                           String total = "";
                           for(int i = 0; i<files.length;i++){
                             String temp = text.substring(0, text.indexOf('">')+2);
@@ -231,6 +230,8 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                                 context,
                                 MaterialPageRoute(builder: (context) => ContentPage(isTeacher: true)));
                           });
+                        }
+
                         },
                       child: const Text("Submit",
                           style: TextStyle(color: Colors.white)),

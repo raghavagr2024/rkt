@@ -193,14 +193,15 @@ Future<dynamic> addFile(List<int> file, String fileName) async {
   return response.data;
 }
 
-Future<http.Response> editContent(var id, var title, var body, var filters, var age) {
+Future<http.Response> editContent(var id, var title, var body, List filters, var age) {
   log("in edit Content");
   return http.put(
     Uri.parse('https://rkt-backend-production.vercel.app/api/db/content/$id'),
     headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
+      'Content-Type': 'application/json',
+      'Authorization': '$access_token',
     },
-    body: jsonEncode({'title': title, 'body': body,"catArr": json.encode(filters), "age": age.toString()}),
+    body: jsonEncode({'title': title, 'body': body, "catArr": filters, "age": age}),
   );
 }
 
@@ -249,11 +250,6 @@ void createCategoryUnion(var data) {
 
   }
   categories = ans.toSet();
-  //categories = categories.toList();
-  print(categories);
-  print(maxAge);
-  print(minAge);
-  print("==================================");
 }
 
 
