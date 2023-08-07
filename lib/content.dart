@@ -118,7 +118,7 @@ class _ContentPage extends State<ContentPage> {
   }
 
   //Method for the API call
-  String categoriesJson = json.encode(["semester 1", "5-6", "Krishna"]);//json.encode(List.from(categories));
+  String categoriesJson = json.encode(List.from(categories));
 
   Widget _getButton() {
     print(categories);
