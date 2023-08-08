@@ -35,13 +35,14 @@ class SignUpPage extends StatelessWidget {
             const SizedBox(height: 20),
             PasswordTextField(),
             const SizedBox(height: 30),
+            if (teacherSignup) PinTextField(),
+            const SizedBox(height: 30),
             LoginButton(isTeacher: isTeacher),
             const SizedBox(height: 30),
           ],
         ),
       ),
-    )
-    );
+    ));
   }
 }
 
@@ -72,7 +73,8 @@ class _EmailTextField extends State<EmailTextField> {
             borderSide: BorderSide(color: Colors.blue),
             borderRadius: BorderRadius.circular(8),
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         ),
       ),
     );
@@ -107,7 +109,8 @@ class _PasswordTextField extends State<PasswordTextField> {
             borderSide: BorderSide(color: Colors.blue),
             borderRadius: BorderRadius.circular(8),
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         ),
       ),
     );
@@ -123,16 +126,14 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
-        if(_password.text.length<6){
+        if (_password.text.length < 6) {
           addSignUpDialog(context, "password must be greater than 6 digits");
-        }
-        else if(!_email.text.contains("@")||!_email.text.contains(".com")){
+        } else if (!_email.text.contains("@") ||
+            !_email.text.contains(".com")) {
           addSignUpDialog(context, "invalid email");
-        }
-        else{
+        } else {
           await signUserUp(context);
         }
-
       },
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.fromLTRB(60, 0, 60, 0),
@@ -143,18 +144,20 @@ class LoginButton extends StatelessWidget {
       child: const Text("Sign up"),
     );
   }
-  Future<void> addSignUpDialog(BuildContext context,String message) async {
+
+  Future<void> addSignUpDialog(BuildContext context, String message) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title:   message==""?const Text('Please check your email for a confirmation email'):const Text("error signing up"),
-          content:  SingleChildScrollView(
+          title: message == ""
+              ? const Text('Please check your email for a confirmation email')
+              : const Text("error signing up"),
+          content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 Text(message),
-
               ],
             ),
           ),
@@ -164,13 +167,12 @@ class LoginButton extends StatelessWidget {
               onPressed: () {
                 _email.clear();
                 _password.clear();
-                if(message==""){
+                if (message == "") {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LoginPage()),
                   );
-                }
-                else{
+                } else {
                   Navigator.of(context).pop();
                 }
               },
@@ -181,25 +183,22 @@ class LoginButton extends StatelessWidget {
     );
   }
 
-
   Future<void> signUserUp(context) async {
     String response;
-      if(isTeacher){
-        response = await signUp(_email.text, _password.text,"teacher" );
-      }
-      else{
-         response = await signUp(_email.text, _password.text,"parent" );
-      }
+    if (isTeacher) {
+      response = await signUp(_email.text, _password.text, "teacher");
+    } else {
+      response = await signUp(_email.text, _password.text, "parent");
+    }
 
-      if(response.contains("error")){
-        addSignUpDialog(context, "Some error has occured");
-      }
-      else{
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-        );
-      }
+    if (response.contains("error")) {
+      addSignUpDialog(context, "Some error has occured");
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    }
   }
 }
 
