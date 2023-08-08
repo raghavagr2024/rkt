@@ -126,11 +126,12 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
-        if (_password.text.length < 6) {
-          addSignUpDialog(context, "password must be greater than 6 digits");
-        } else if (!_email.text.contains("@") ||
-            !_email.text.contains(".com")) {
-          addSignUpDialog(context, "invalid email");
+        if (!_email.text.contains("@") || !_email.text.contains(".com")) {
+          addSignUpDialog(context, "Invalid Email");
+        } else if (_password.text.length < 6) {
+          addSignUpDialog(context, "Password must be greater than 6 digits");
+        } else if (teacherSignup && _pin.text != "54321") {
+          addSignUpDialog(context, "Incorrect Pin");
         } else {
           await signUserUp(context);
         }
@@ -153,7 +154,7 @@ class LoginButton extends StatelessWidget {
         return AlertDialog(
           title: message == ""
               ? const Text('Please check your email for a confirmation email')
-              : const Text("error signing up"),
+              : const Text("Error signing up"),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
