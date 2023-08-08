@@ -280,7 +280,7 @@ Future<List> getContentByID(var id) async {
   }
   print("temp");
   List answers = [temp,jsonDecode(ans.body)[0]["categories"],jsonDecode(ans.body)[0]["age"]];
-  print(temp);
+
   return answers;
 
 

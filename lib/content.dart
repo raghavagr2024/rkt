@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
@@ -11,13 +12,16 @@ import 'main.dart';
 import 'package:rkt/module_page.dart';
 import 'package:rkt/teacherNewPage.dart';
 
-double _currentSliderValue = 5;
+double _currentSliderValue = minAge as double;
 bool semester1 = false;
 bool semester2 = false;
 List<bool> checks = List.filled(categories.length, false);
+List activeFilters = [];
+List activeModules = [];
 
 class ContentPage extends StatefulWidget {
   late bool isTeacher;
+
   Widget build(BuildContext context) {
     return Text("Modules");
   }
@@ -34,6 +38,7 @@ class _ContentPage extends State<ContentPage> {
   late bool isTeacher;
 
   _ContentPage({required this.isTeacher});
+
   void _logOut() {
     _logoutFromSupabase();
     Navigator.pushReplacement(
@@ -56,10 +61,40 @@ class _ContentPage extends State<ContentPage> {
     }
   }
 
+  void updateDisplayModules(List activeFilters) {
+    setState(() {
+      activeModules = [];
+      for (int i = 0; i < _data.length; i++) {
+        List c = _data[i]["categories"];
+        bool contains = true;
+        if (_data[i]["age"] == _currentSliderValue.toInt()) {
+          for (int j = 0; j < activeFilters.length; j++) {
+            if (!c.contains(activeFilters[j])) {
+              contains = false;
+              break;
+            }
+          }
+          if (contains) {
+            setState(() {
+              activeModules.add(_data[i]);
+            });
+          }
+        }
+      }
+        print("active module");
+        print(activeModules.length);
+
+    });
+
+
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     setState(() {
       _data.clear();
+      updateDisplayModules(activeFilters);
     });
 
     return FutureBuilder<dynamic>(
@@ -67,7 +102,8 @@ class _ContentPage extends State<ContentPage> {
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             _data = jsonDecode(snapshot.data);
-            print(_data);
+            activeModules = _data;
+
             return Scaffold(
               floatingActionButton: _getButton(),
               body: SingleChildScrollView(
@@ -94,13 +130,18 @@ class _ContentPage extends State<ContentPage> {
                         onChanged: (double value) {
                           setState(() {
                             _currentSliderValue = value;
+                            updateDisplayModules(activeFilters);
                           });
                         },
                       ),
                     ),
                     SizedBox(
-                      height: 100,
-                      child: CheckboxListWidget(checkboxItems: categories),
+                      height: 70,
+                      width: 2000,
+                      child: CheckboxListWidget(
+                        checkboxItems: categories,
+                        updateDisplayModules: updateDisplayModules,
+                      ),
                     ),
                     ModuleList(isTeacher: isTeacher),
                     ElevatedButton(
@@ -133,13 +174,13 @@ class _ContentPage extends State<ContentPage> {
       return Container();
     }
   }
-
-
 }
 
 class ModuleList extends StatefulWidget {
   late final isTeacher;
+
   ModuleList({required this.isTeacher});
+
   @override
   State<StatefulWidget> createState() {
     return _ModuleList(isTeacher: isTeacher);
@@ -148,12 +189,14 @@ class ModuleList extends StatefulWidget {
 
 class _ModuleList extends State<ModuleList> {
   late final isTeacher;
+
   _ModuleList({required this.isTeacher});
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemBuilder: _getModules,
-      itemCount: _data.length,
+      itemCount: activeModules.length,
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
     );
@@ -172,7 +215,9 @@ class Module extends StatefulWidget {
   late int index;
   late BuildContext context;
   late final isTeacher;
+
   Module({required this.context, required this.index, required this.isTeacher});
+
   @override
   State<StatefulWidget> createState() {
     return _Module(
@@ -215,7 +260,7 @@ class _Module extends State<Module> {
               width: 20,
             ),
             Text(
-              "${_data[index]['inserted_at'].toString().substring(0, 10)}: ",
+              "${activeModules[index]['inserted_at'].toString().substring(0, 10)}: ",
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 30.0,
@@ -229,11 +274,11 @@ class _Module extends State<Module> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  ModulePageParent(id: _data[index]['id'])));
+                              builder: (context) => ModulePageParent(
+                                  id: activeModules[index]['id'])));
                     },
                     child: Text(
-                      _data[index]['Title'],
+                      activeModules[index]['Title'],
                       style: const TextStyle(
                         fontSize: 25,
                       ),
@@ -250,8 +295,8 @@ class _Module extends State<Module> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  TeacherNewPage.edit(_data[index]['id'])));
+                              builder: (context) => TeacherNewPage.edit(
+                                  activeModules[index]['id'])));
                     });
                   },
                   icon: const Icon(Icons.edit))
@@ -272,7 +317,7 @@ class _Module extends State<Module> {
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
-            title: Text('Delete module ${_data[index]["Title"]}?'),
+            title: Text('Delete module ${activeModules[index]["Title"]}?'),
             content: const SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[],
@@ -289,7 +334,7 @@ class _Module extends State<Module> {
                 child: const Text('Confirm'),
                 onPressed: () async {
                   print("in confirm");
-                  await deleteContent(_data[index]['id']);
+                  await deleteContent(activeModules[index]['id']);
                   Navigator.of(context).pop();
                   Navigator.push(
                       context,
@@ -307,15 +352,21 @@ class _Module extends State<Module> {
 
 class CheckboxListWidget extends StatefulWidget {
   final HashSet<dynamic> checkboxItems;
+  final ValueChanged<List> updateDisplayModules;
 
-  CheckboxListWidget({required this.checkboxItems});
+  CheckboxListWidget(
+      {required this.checkboxItems, required this.updateDisplayModules});
 
   @override
-  _CheckboxListWidgetState createState() => _CheckboxListWidgetState();
+  _CheckboxListWidgetState createState() =>
+      _CheckboxListWidgetState(updateDisplayModules: updateDisplayModules);
 }
 
 class _CheckboxListWidgetState extends State<CheckboxListWidget> {
   late List<dynamic> _checkboxList;
+  final ValueChanged<List> updateDisplayModules;
+
+  _CheckboxListWidgetState({required this.updateDisplayModules});
 
   @override
   void initState() {
@@ -326,18 +377,27 @@ class _CheckboxListWidgetState extends State<CheckboxListWidget> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      scrollDirection: Axis.horizontal,
       itemCount: _checkboxList.length,
       itemBuilder: (context, index) {
         dynamic item = _checkboxList[index];
-        return CheckboxListTile(
-          title: Text(item.toString()),
-          value: checks[index],
-          onChanged: (newValue) {
-            setState(() {
-              checks[index] = !checks[index];
-            });
-          },
-        );
+        return SizedBox(
+            width: 200,
+            child: CheckboxListTile(
+              title: Text(item.toString()),
+              value: checks[index],
+              onChanged: (newValue) {
+                setState(() {
+                  checks[index] = !checks[index];
+                  if (checks[index]) {
+                    activeFilters.add(_checkboxList[index]);
+                  } else {
+                    activeFilters.remove(_checkboxList[index]);
+                  }
+                  updateDisplayModules(activeFilters);
+                });
+              },
+            ));
       },
     );
   }

@@ -389,7 +389,7 @@ class _Category extends State<Category> {
         }
       },
       child: Row(
-        children: [Text(categories.elementAt(index)), Icon(added ? Icons.check : null)],
+        children: [Text(categories.elementAt(index)), Icon(currentCategories.contains(categories.elementAt(index)) ? Icons.check : null)],
       ),
     );
   }
@@ -397,14 +397,14 @@ class _Category extends State<Category> {
   void removeCategory() {
     setState(() {
       currentCategories.remove(categories.elementAt(index));
-      added = false;
+      
     });
   }
 
   void addCategory() {
     setState(() {
       currentCategories.add(categories.elementAt(index));
-      added = true;
+      
     });
   }
 }
