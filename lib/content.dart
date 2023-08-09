@@ -21,30 +21,34 @@ List activeModules = [];
 
 class ContentPage extends StatefulWidget {
   late bool isTeacher;
-
+  List displayModules = [];
   Widget build(BuildContext context) {
     return Text("Modules");
   }
 
-  ContentPage({required this.isTeacher});
+  ContentPage({required this.isTeacher, required  this.displayModules});
+
 
   @override
-  State<ContentPage> createState() => _ContentPage(isTeacher: isTeacher);
+  State<ContentPage> createState() => _ContentPage(isTeacher: isTeacher, displayModules: displayModules);
 }
 
 var _data = [];
 
 class _ContentPage extends State<ContentPage> {
   late bool isTeacher;
-
-  _ContentPage({required this.isTeacher});
+  List displayModules;
+  _ContentPage({required this.isTeacher, required this.displayModules});
 
   void _logOut() {
     _logoutFromSupabase();
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
-
+  @override
+  void initState() {
+    activeModules = displayModules;
+  }
   void _logoutFromSupabase() async {
     final response = await http.post(
       Uri.parse('https://rkt-backend-production.vercel.app/api/auth/signout'),
@@ -62,8 +66,9 @@ class _ContentPage extends State<ContentPage> {
   }
 
   void updateDisplayModules(List activeFilters) {
-    setState(() {
-      activeModules = [];
+
+      List tempModules = [];
+      print("active Filters $activeFilters");
       for (int i = 0; i < _data.length; i++) {
         List c = _data[i]["categories"];
         bool contains = true;
@@ -75,26 +80,24 @@ class _ContentPage extends State<ContentPage> {
             }
           }
           if (contains) {
-            setState(() {
-              activeModules.add(_data[i]);
-            });
+              tempModules.add(_data[i]);
           }
         }
       }
-        print("active module");
-        print(activeModules.length);
+      activeModules = tempModules;
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => ContentPage(isTeacher: isTeacher, displayModules: activeModules)));
+      });
 
-    });
 
-
-    
   }
 
   @override
   Widget build(BuildContext context) {
     setState(() {
       _data.clear();
-      updateDisplayModules(activeFilters);
+
     });
 
     return FutureBuilder<dynamic>(
@@ -102,7 +105,10 @@ class _ContentPage extends State<ContentPage> {
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             _data = jsonDecode(snapshot.data);
-            activeModules = _data;
+            if(activeModules.isEmpty){
+              activeModules = _data;
+            }
+
 
             return Scaffold(
               floatingActionButton: _getButton(),
@@ -130,7 +136,7 @@ class _ContentPage extends State<ContentPage> {
                         onChanged: (double value) {
                           setState(() {
                             _currentSliderValue = value;
-                            updateDisplayModules(activeFilters);
+                            updateDisplayModules(activeModules);
                           });
                         },
                       ),
@@ -143,7 +149,7 @@ class _ContentPage extends State<ContentPage> {
                         updateDisplayModules: updateDisplayModules,
                       ),
                     ),
-                    ModuleList(isTeacher: isTeacher),
+                    ModuleList(isTeacher: isTeacher, activeLinks: activeModules),
                     ElevatedButton(
                       onPressed: _logOut,
                       child: const Text('Log Out'),
@@ -178,25 +184,25 @@ class _ContentPage extends State<ContentPage> {
 
 class ModuleList extends StatefulWidget {
   late final isTeacher;
-
-  ModuleList({required this.isTeacher});
+  late List<dynamic> activeLinks = activeModules;
+  ModuleList({required this.isTeacher, required List<dynamic> activeLinks});
 
   @override
   State<StatefulWidget> createState() {
-    return _ModuleList(isTeacher: isTeacher);
+    return _ModuleList(isTeacher: isTeacher, activeLinks: activeLinks);
   }
 }
 
 class _ModuleList extends State<ModuleList> {
   late final isTeacher;
-
-  _ModuleList({required this.isTeacher});
+  late List<dynamic> activeLinks = activeModules;
+  _ModuleList({required this.isTeacher, required List<dynamic> activeLinks});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemBuilder: _getModules,
-      itemCount: activeModules.length,
+      itemCount: activeLinks.length,
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
     );
@@ -207,6 +213,7 @@ class _ModuleList extends State<ModuleList> {
       context: context,
       index: index,
       isTeacher: isTeacher,
+      activeLinks: activeLinks,
     );
   }
 }
@@ -215,8 +222,8 @@ class Module extends StatefulWidget {
   late int index;
   late BuildContext context;
   late final isTeacher;
-
-  Module({required this.context, required this.index, required this.isTeacher});
+  late List activeLinks = activeModules;
+  Module({required this.context, required this.index, required this.isTeacher, required List activeLinks});
 
   @override
   State<StatefulWidget> createState() {
@@ -224,6 +231,7 @@ class Module extends StatefulWidget {
       context: context,
       index: index,
       isTeacher: isTeacher,
+      activeLinks: activeLinks
     );
   }
 }
@@ -232,9 +240,9 @@ class _Module extends State<Module> {
   late int index;
   late BuildContext context;
   late final isTeacher;
-
+  late List activeLinks = activeModules;
   _Module(
-      {required this.context, required this.index, required this.isTeacher});
+      {required this.context, required this.index, required this.isTeacher, required List activeLinks});
 
   @override
   Widget build(context) {
@@ -260,7 +268,7 @@ class _Module extends State<Module> {
               width: 20,
             ),
             Text(
-              "${activeModules[index]['inserted_at'].toString().substring(0, 10)}: ",
+              "${activeLinks[index]['inserted_at'].toString().substring(0, 10)}: ",
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 30.0,
@@ -275,10 +283,10 @@ class _Module extends State<Module> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => ModulePageParent(
-                                  id: activeModules[index]['id'])));
+                                  id: activeLinks[index]['id'])));
                     },
                     child: Text(
-                      activeModules[index]['Title'],
+                      activeLinks[index]['Title'],
                       style: const TextStyle(
                         fontSize: 25,
                       ),
@@ -296,7 +304,7 @@ class _Module extends State<Module> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => TeacherNewPage.edit(
-                                  activeModules[index]['id'])));
+                                  activeLinks[index]['id'])));
                     });
                   },
                   icon: const Icon(Icons.edit))
@@ -317,7 +325,7 @@ class _Module extends State<Module> {
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
-            title: Text('Delete module ${activeModules[index]["Title"]}?'),
+            title: Text('Delete module ${activeLinks[index]["Title"]}?'),
             content: const SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[],
@@ -334,12 +342,12 @@ class _Module extends State<Module> {
                 child: const Text('Confirm'),
                 onPressed: () async {
                   print("in confirm");
-                  await deleteContent(activeModules[index]['id']);
+                  await deleteContent(activeLinks[index]['id']);
                   Navigator.of(context).pop();
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ContentPage(isTeacher: true)));
+                          builder: (context) => ContentPage(isTeacher: true, displayModules: [],)));
                 },
               ),
             ],
@@ -391,11 +399,16 @@ class _CheckboxListWidgetState extends State<CheckboxListWidget> {
                   checks[index] = !checks[index];
                   if (checks[index]) {
                     activeFilters.add(_checkboxList[index]);
+                    print("smth");
+                    print(_checkboxList[index]);
                   } else {
                     activeFilters.remove(_checkboxList[index]);
+                    print("smth");
+                    print(_checkboxList[index]);
                   }
-                  updateDisplayModules(activeFilters);
+
                 });
+                updateDisplayModules(activeFilters);
               },
             ));
       },

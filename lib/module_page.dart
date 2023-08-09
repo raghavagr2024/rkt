@@ -51,7 +51,7 @@ class _ModulePageParent extends State<ModulePageParent> {
               onWillPop: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-                      return ContentPage(isTeacher: teacherAccount);
+                      return ContentPage(isTeacher: teacherAccount, displayModules: [],);
                     }));
                 return Future.value(true); //this line will help
               },

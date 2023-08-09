@@ -228,7 +228,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => ContentPage(isTeacher: true)));
+                                MaterialPageRoute(builder: (context) => ContentPage(isTeacher: true, displayModules: [],)));
                           });
                         }
 

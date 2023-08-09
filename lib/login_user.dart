@@ -189,7 +189,7 @@ class LoginButton extends StatelessWidget {
     bool response = await login(_email.text, _password.text);
     if(response){
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) => ContentPage(isTeacher: teacherAccount)));
+          MaterialPageRoute(builder: (context) => ContentPage(isTeacher: teacherAccount, displayModules: [],)));
     }
     else{
       addLoginDialog(context, "Error logging in");
